@@ -57,6 +57,7 @@
         <mysql-connector-java.vesion>8.0.33</mysql-connector-java.vesion>
         <lombok.version>1.18.30</lombok.version>
         <hutool-all.version>5.8.38</hutool-all.version>
+        <knife4j.version>4.4.0</knife4j.version>
     </properties>
 
     <dependencyManagement>
@@ -116,6 +117,13 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool-all.version}</version>
+            </dependency>
+
+            <!-- test -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

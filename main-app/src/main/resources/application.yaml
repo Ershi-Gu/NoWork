@@ -1,5 +1,7 @@
 server:
   port: 19999 # 运行端口
+  servlet:
+    context-path: /api
 spring:
   application:
     name: no-work # 项目名
@@ -17,18 +19,17 @@ spring:
       database: 0 # 指定默认数据库
       timeout: 1800000
       password: ${no-work.redis.password:}
-springdoc: # springdoc-openapi项目配置
+springdoc:
   swagger-ui:
     path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
   api-docs:
     path: /v3/api-docs
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
-      packages-to-scan: con.ershi
-knife4j: # knife4j的增强配置，不需要增强可以不配
+      packages-to-scan: 'com.ershi' # 包含所有子模块
+knife4j:
   enable: true
   setting:
     language: zh_cn
+

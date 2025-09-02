@@ -24,6 +24,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
 
         <!-- datasource -->
         <dependency>
@@ -57,6 +61,10 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.xingfudeshi</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
         </dependency>
     </dependencies>
 

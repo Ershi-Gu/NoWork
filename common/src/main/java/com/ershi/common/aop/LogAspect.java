@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 /**
  * 请求日志记录拦截器，记录请求来源/响应时间/参数等
  *
- * @author yunxiang.gu@hand-china.com
+ * @author Ershi-Gu.
  * @since 2025-09-02
  */
 @Aspect

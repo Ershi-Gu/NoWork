@@ -8,7 +8,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 /**
  * 项目主启动类
  *
- * @author yunxiang.gu@hand-china.com
+ * @author Ershi-Gu.
  * @since 2025-09-02
  */
 @SpringBootApplication

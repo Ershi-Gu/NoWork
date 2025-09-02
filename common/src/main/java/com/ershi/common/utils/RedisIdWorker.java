@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * 通过Redis实现的全局唯一id，通常用于生成唯一请求 d
  *
- * @author yunxiang.gu@hand-china.com
+ * @author Ershi-Gu.
  * @since 2025-09-02
  */
 @Component

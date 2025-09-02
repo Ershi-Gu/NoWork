@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ershi.hotboard.mapper.HotBoardMapper">
+    <resultMap id="BaseResultMap" type="com.ershi.hotboard.domain.entity.HotBoardEntity">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="type_name" jdbcType="VARCHAR" property="typeName"/>
+        <result column="icon_url" jdbcType="VARCHAR" property="iconUrl"/>
+        <result column="data_json" jdbcType="CLOB" property="dataJson"/>
+        <result column="category" jdbcType="INTEGER" property="category"/>
+        <result column="update_interval" jdbcType="DECIMAL" property="updateInterval"/>
+        <result column="sort" jdbcType="INTEGER" property="sort"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_delete" jdbcType="TINYINT" property="isDelete"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        `id`, `name`, `type`, `type_name`, `icon_url`, `data_json`, `category`, `update_interval`, `sort`,
+        `create_time`, `update_time`, `is_delete`
+    </sql>
+
+</mapper>

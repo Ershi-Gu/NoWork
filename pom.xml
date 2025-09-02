@@ -2,21 +2,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- 父依赖，springboot 3.5 -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
+    <!-- project information -->
     <groupId>com.ershi</groupId>
     <artifactId>no-work</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>no-work</name>
-    <description>no-work</description>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <!-- licenses -->
     <url/>
     <licenses>
         <license/>
     </licenses>
+
+    <!-- developer information -->
     <developers>
         <developer/>
     </developers>
@@ -26,21 +33,92 @@
         <tag/>
         <url/>
     </scm>
-    <properties>
-        <java.version>17</java.version>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>common</module>
+        <module>hot-board</module>
+    </modules>
+
+    <!-- dependency-version -->
+    <properties>
+        <!-- 基础设置 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>17</java.version>
+
+        <!-- 项目模块依赖 -->
+        <common.version>1.0-SNAPSHOT</common.version>
+        <hot-board.version>1.0-SNAPSHOT</hot-board.version>
+
+        <!-- 第三方依赖 -->
+        <mybatis-flex.version>1.11.1</mybatis-flex.version>
+        <netty-all.version>4.1.76.Final</netty-all.version>
+        <redisson.version>3.22.0</redisson.version>
+        <mysql-connector-java.vesion>8.0.33</mysql-connector-java.vesion>
+        <lombok.version>1.18.30</lombok.version>
+        <hutool-all.version>5.8.38</hutool-all.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- 模块依赖 -->
+            <dependency>
+                <groupId>com.ershi</groupId>
+                <artifactId>common</artifactId>
+                <version>${common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ershi</groupId>
+                <artifactId>hot-board</artifactId>
+                <version>${hot-board.version}</version>
+            </dependency>
+
+            <!-- datasource -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <scope>runtime</scope>
+                <version>${mysql-connector-java.vesion}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <!-- ORM -->
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-spring-boot3-starter</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-processor</artifactId>
+                <version>${mybatis-flex.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- websocket -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty-all.version}</version>
+            </dependency>
+
+            <!-- common-util -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool-all.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

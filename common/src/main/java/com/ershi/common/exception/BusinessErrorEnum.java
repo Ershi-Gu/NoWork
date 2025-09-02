@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
  */
 @AllArgsConstructor
 public enum BusinessErrorEnum implements ErrorEnum {
-
+    COMMON_ERROR(19999, "业务异常"),
     ;
 
     private final Integer errorCode;

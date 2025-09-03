@@ -1,6 +1,6 @@
 import com.ershi.hotboard.datasource.BiliBiliDataSource;
 import com.ershi.hotboard.domain.entity.HotBoardEntity;
-import com.ershi.hotboard.job.HotBoardSyncJob;
+import com.ershi.hotboard.job.HotBoardAsyncJob;
 import com.ershi.mainapp.MainAppApplication;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class DataSourceTest {
 
     @Resource
-    private HotBoardSyncJob hotBoardSyncJob;
+    private HotBoardAsyncJob hotBoardAsyncJob;
 
     @Test
     public void getHotBoardData() {
@@ -22,6 +22,6 @@ public class DataSourceTest {
 
     @Test
     public void runHBJob() {
-        hotBoardSyncJob.run();
+        hotBoardAsyncJob.run();
     }
 }

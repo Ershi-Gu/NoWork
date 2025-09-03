@@ -20,14 +20,14 @@ import java.util.Collection;
 import static com.ershi.hotboard.domain.entity.table.HotBoardEntityTableDef.HOT_BOARD_ENTITY;
 
 /**
- * 热榜数据增量同步到数据库任务
+ * 定时获取热榜数据增量到数据库-异步多线程
  *
  * @author Ershi-Gu.
  * @since 2025-09-03
  */
 @Slf4j
 @Component
-public class HotBoardSyncJob {
+public class HotBoardAsyncJob {
 
     @Resource
     private DataSourceFactory dataSourceFactory;

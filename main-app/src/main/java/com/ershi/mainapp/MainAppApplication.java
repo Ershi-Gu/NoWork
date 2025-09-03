@@ -1,8 +1,8 @@
 package com.ershi.mainapp;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
@@ -11,10 +11,15 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @author Ershi-Gu.
  * @since 2025-09-02
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+        "com.ershi.hotboard"
+})
+@MapperScan(value = {
+        "com.ershi.hotboard.mapper"
+})
 @EnableAspectJAutoProxy(exposeProxy = true)
-@ComponentScan(basePackages = {"com.ershi.hotboard", "com.ershi.common"})
 public class MainAppApplication {
+
 
     public static void main(String[] args) {
         SpringApplication.run(MainAppApplication.class, args);

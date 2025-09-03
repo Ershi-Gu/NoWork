@@ -1,3 +1,19 @@
+server:
+  port: 19999 # 运行端口
 spring:
   application:
-    name: no-work
+    name: no-work # 项目名
+  profiles:
+    active: dev # 指定当前运行环境
+  datasource: # 数据源
+    url: jdbc:mysql://${no-work.mysql.ip:127.0.0.1}:${no-work.mysql.port:3306}/${no-work.mysql.db:no-work}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ${no-work.mysql.username:root}
+    password: ${no-work.mysql.password:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: ${no-work.redis.host:127.0.0.1}
+      port: ${no-work.redis.port:6379}
+      database: 0 # 指定默认数据库
+      timeout: 1800000
+      password: ${no-work.redis.password:}

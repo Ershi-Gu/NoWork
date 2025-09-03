@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# 忽略所有 application-xxx.yaml
+/application-*.yaml
+# 如果要忽略子目录里的，也可以去掉开头的 /
+application-*.yaml
+# 但保留默认 application.yaml
+!application.yaml

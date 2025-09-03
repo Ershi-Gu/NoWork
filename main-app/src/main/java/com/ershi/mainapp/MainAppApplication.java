@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @since 2025-09-02
  */
 @SpringBootApplication
-@ComponentScan(basePackages = "com.ershi.hotboard")
+@ComponentScan(basePackages = {"com.ershi.hotboard", "com.ershi.common"})
 public class MainAppApplication {
 
     public static void main(String[] args) {

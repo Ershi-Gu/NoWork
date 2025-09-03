@@ -1,5 +1,7 @@
 package com.ershi.hotboard.datasource;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.Map;
  * @author Ershi-Gu.
  * @since 2025-09-03
  */
+@Component
 public class DataSourceFactory {
 
     /** 存放数据源实例 */

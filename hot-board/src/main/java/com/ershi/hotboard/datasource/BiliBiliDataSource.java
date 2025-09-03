@@ -60,7 +60,7 @@ public class BiliBiliDataSource implements DataSource {
         }).toList();
 
         return HotBoardEntity.builder()
-                .name("哔战热搜")
+                .name("哔站热搜")
                 .type(HBDataTypeEnum.BILI_BILI.getType())
                 .typeName(HBDataTypeEnum.BILI_BILI.getDesc())
                 .iconUrl("https://www.bilibili.com/favicon.ico")

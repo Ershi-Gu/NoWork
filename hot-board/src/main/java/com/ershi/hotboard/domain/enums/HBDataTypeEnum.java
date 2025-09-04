@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public enum HBDataTypeEnum {
 
     BILI_BILI("BiliBili", "哔哩哔哩"),
+    JUE_JIN("JueJin", "稀土掘金")
     ;
 
     /** 数据源类型 */

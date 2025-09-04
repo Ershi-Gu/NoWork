@@ -1,4 +1,4 @@
-import com.ershi.hotboard.datasource.BiliBiliDataSource;
+import com.ershi.hotboard.datasource.JueJinDataSource;
 import com.ershi.hotboard.domain.entity.HotBoardEntity;
 import com.ershi.hotboard.job.HotBoardAsyncJob;
 import com.ershi.mainapp.MainAppApplication;
@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(
-        classes = {MainAppApplication.class,},
-        properties = {"spring.profiles.active=dev"}
+        classes = {MainAppApplication.class,}
 )
 public class DataSourceTest {
 
@@ -17,11 +16,13 @@ public class DataSourceTest {
 
     @Test
     public void getHotBoardData() {
-        HotBoardEntity hotBoardData = new BiliBiliDataSource().getHotBoardData();
+//        HotBoardEntity hotBoardData = new BiliBiliDataSource().getHotBoardData();
+        HotBoardEntity hotBoardData = new JueJinDataSource().getHotBoardData();
     }
 
     @Test
-    public void runHBJob() {
+    public void runHBJob() throws InterruptedException {
         hotBoardAsyncJob.run();
+        Thread.sleep(5000);
     }
 }

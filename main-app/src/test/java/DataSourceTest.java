@@ -23,6 +23,5 @@ public class DataSourceTest {
     @Test
     public void runHBJob() throws InterruptedException {
         hotBoardAsyncJob.run();
-        Thread.sleep(5000);
     }
 }

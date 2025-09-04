@@ -1,6 +1,7 @@
 package com.ershi.hotboard.job;
 
 import cn.hutool.core.date.StopWatch;
+import com.ershi.common.utils.FutureUtils;
 import com.ershi.hotboard.datasource.DataSource;
 import com.ershi.hotboard.datasource.DataSourceFactory;
 import com.ershi.hotboard.domain.entity.HotBoardEntity;
@@ -10,12 +11,15 @@ import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.ershi.hotboard.domain.entity.table.HotBoardEntityTableDef.HOT_BOARD_ENTITY;
 
@@ -42,8 +46,9 @@ public class HotBoardAsyncJob {
     private IHotBoardService hotBoardService;
 
     /**
-     * 每半小时执行一次任务
+     * 每半小时执行一次任务-异步开启任务，为了等待所有线程结束并输出总处理时间
      */
+    @Async
     @Scheduled(cron = "0 0/30 * * * ?")
     public void run() {
         log.info("热榜数据开始更新...");
@@ -54,21 +59,22 @@ public class HotBoardAsyncJob {
         // 获取所有数据源
         Collection<DataSource> allDataSources = dataSourceFactory.getAllDataSources();
 
-        // 多线程更新所有数据源
-        allDataSources.forEach(dataSource -> {
-            noWorkExecutor.execute(() -> {
-                HBDataTypeEnum typeEnum = dataSource.getTypeEnum();
-                try {
-                    // 设置重试，防止第三方限流
-                    retryTemplate.execute(context -> {
-                        updateDataToDb(dataSource);
-                        return null;
-                    });
-                } catch (Exception e) {
-                    log.error("数据源 [{}] 更新失败，已达到最大重试次数，放弃更新", typeEnum, e);
-                }
-            });
-        });
+        // 构建 CompletableFuture 列表
+        List<CompletableFuture<Void>> futures = allDataSources.stream()
+                .map(ds -> CompletableFuture.runAsync(() -> {
+                    try {
+                        retryTemplate.execute(ctx -> {
+                            updateDataToDb(ds);
+                            return null;
+                        });
+                    } catch (Exception e) {
+                        log.error("数据源 [{}] 更新失败，已达到最大重试次数，放弃更新", ds.getTypeEnum().getDesc(), e);
+                    }
+                }, noWorkExecutor))
+                .toList();
+
+        // 等待所有任务线程执行完毕
+        FutureUtils.sequenceNonNull(futures).join();
 
         stopWatch.stop();
         log.info("热榜数据更新完毕，耗时：{}ms", stopWatch.getTotalTimeMillis());

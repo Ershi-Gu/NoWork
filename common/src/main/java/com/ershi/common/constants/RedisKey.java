@@ -15,6 +15,11 @@ public class RedisKey {
     public static final String REQUEST_ID_KEY = "requestId:%s";
 
     /**
+     * 热榜数据列表
+     */
+    public static final String HOT_BOARD_LIST_KEY = "hotBoardList";
+
+    /**
      * 获取key
      *
      * @param key 带有模板字符串的key

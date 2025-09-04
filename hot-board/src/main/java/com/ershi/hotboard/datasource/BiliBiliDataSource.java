@@ -8,13 +8,12 @@ import com.ershi.hotboard.domain.entity.HotBoardEntity;
 import com.ershi.hotboard.domain.enums.HBCategoryEnum;
 import com.ershi.hotboard.domain.enums.HBDataTypeEnum;
 import com.ershi.hotboard.domain.enums.HBUpdateIntervalEnum;
-import com.ershi.hotboard.domain.vo.HotBoardVO;
+import com.ershi.hotboard.domain.dto.HotBoardDataDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * BiliBili 热搜数据源
@@ -45,8 +44,8 @@ public class BiliBiliDataSource implements DataSource {
         JSONObject resJson = JSON.parseObject(res);
         JSONArray origDataList = resJson.getJSONObject("data").getJSONArray("list");
 
-        // 构造热榜展示数据
-        List<HotBoardVO> dataList = origDataList.stream().map(item -> {
+        // 构造热榜实际存储数据
+        List<HotBoardDataDTO> dataList = origDataList.stream().map(item -> {
             JSONObject itemJson = (JSONObject) item;
 
             // 标题
@@ -56,11 +55,11 @@ public class BiliBiliDataSource implements DataSource {
             // 热度
             Integer heat = itemJson.getJSONObject("stat").getInteger("view");
 
-            return HotBoardVO.builder().title(title).heat(heat).url(url).build();
+            return HotBoardDataDTO.builder().title(title).heat(heat).url(url).build();
         }).toList();
 
         return HotBoardEntity.builder()
-                .name("哔站热搜")
+                .name("B站热搜")
                 .type(HBDataTypeEnum.BILI_BILI.getType())
                 .typeName(HBDataTypeEnum.BILI_BILI.getDesc())
                 .iconUrl("https://www.bilibili.com/favicon.ico")
@@ -68,7 +67,7 @@ public class BiliBiliDataSource implements DataSource {
                 .dataJson(
                         JSON.toJSONString(
                                 dataList.stream()
-                                        .sorted(Comparator.comparingInt(HotBoardVO::getHeat).reversed())
+                                        .sorted(Comparator.comparingInt(HotBoardDataDTO::getHeat).reversed())
                                         .toList()
                         )
                 )

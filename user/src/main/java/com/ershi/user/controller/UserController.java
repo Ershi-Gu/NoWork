@@ -5,6 +5,7 @@ import com.ershi.user.domain.dto.UserEmailCaptchaReq;
 import com.ershi.user.domain.dto.UserEmailRegisterReq;
 import com.ershi.user.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * @author mybatis-flex-helper automatic generation
  * @since 1.0
  */
+@Tag(name = "用户模块api")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -31,8 +33,8 @@ public class UserController {
     }
 
     @Operation(summary = "邮箱注册")
-    @PostMapping("/register")
-    public ApiResult<Long> register(@RequestBody UserEmailRegisterReq userEmailRegisterReq) {
-        return ApiResult.success();
+    @PostMapping("/email/register")
+    public ApiResult<String> emailRegister(@RequestBody UserEmailRegisterReq userEmailRegisterReq) {
+        return ApiResult.success(userService.emailRegister(userEmailRegisterReq));
     }
 }

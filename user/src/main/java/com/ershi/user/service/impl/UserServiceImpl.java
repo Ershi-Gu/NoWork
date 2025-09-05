@@ -1,13 +1,18 @@
 package com.ershi.user.service.impl;
 
 
+import com.ershi.common.constants.RedisKey;
 import com.ershi.common.exception.BusinessErrorEnum;
 import com.ershi.common.manager.RedissonManager;
 import com.ershi.common.utils.AssertUtil;
+import com.ershi.common.utils.RedisUtils;
 import com.ershi.common.utils.RequestHolder;
+import com.ershi.user.domain.dto.UserEmailRegisterReq;
 import com.ershi.user.manager.CaptchaManager;
 import com.ershi.user.manager.EmailManager;
+import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.redisson.api.RateIntervalUnit;
 import org.springframework.stereotype.Service;
@@ -15,8 +20,11 @@ import com.ershi.user.service.IUserService;
 import com.ershi.user.domain.entity.UserEntity;
 import com.ershi.user.mapper.UserMapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
+import org.springframework.util.DigestUtils;
 
 import java.util.List;
+
+import static com.ershi.user.domain.table.UserEntityTableDef.USER_ENTITY;
 
 /**
  * 用户表 服务层实现。
@@ -62,6 +70,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
         // 发送邮件
         emailManager.sendRegisterEmail(email, emailCaptcha);
+    }
+
+    @Override
+    public String emailRegister(UserEmailRegisterReq userEmailRegisterReq) {
+        String password = userEmailRegisterReq.getPassword();
+        String checkPassword = userEmailRegisterReq.getCheckPassword();
+        String email = userEmailRegisterReq.getEmail();
+        String emailCaptcha = userEmailRegisterReq.getEmailCaptcha();
+
+        // 验证参数
+        AssertUtil.isFalse(StringUtils.isAnyBlank(password, checkPassword, email, emailCaptcha),
+                BusinessErrorEnum.API_PARAM_ERROR, "参数为空异常");
+
+        // 密码验证
+        AssertUtil.isTrue(password.equals(checkPassword),
+                BusinessErrorEnum.API_PARAM_ERROR, "密码不一致");
+
+        // 验证邮箱是否已存在
+        boolean exist = this.count(QueryWrapper.create().where(USER_ENTITY.EMAIL.eq(email))) > 0;
+        AssertUtil.isFalse(exist, BusinessErrorEnum.EMAIL_EXIST_ERROR);
+
+        // 校验邮箱验证码
+        String captchaRedisKey = RedisKey.getKey(RedisKey.REGISTER_EMAIL_CAPTCHA_KEY, email);
+        String captcha = RedisUtils.get(captchaRedisKey, String.class);
+        AssertUtil.equal(emailCaptcha, captcha, BusinessErrorEnum.EMAIL_CAPTCHA_ERROR);
+        // 校验完毕后删除Redis中的验证码，防止重复注册
+        RedisUtils.del(captchaRedisKey);
+
+        // todo 用户数据2DB
+
+        return "";
     }
 
     /**

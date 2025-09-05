@@ -1,15 +1,19 @@
 package com.ershi.user.domain.dto;
 
+import lombok.Data;
+import lombok.Getter;
+
 /**
  * 用户注册请求体
  *
  * @author Ershi-Gu.
  * @since 2025-09-05
  */
+@Getter
 public class UserEmailRegisterReq {
 
     /**
-     * 账号
+     * 账号（可选填）
      */
     private String account;
 
@@ -28,5 +32,8 @@ public class UserEmailRegisterReq {
      */
     private String email;
 
-    // todo 完善验证码
+    /**
+     * 邮箱验证码
+     */
+    private String emailCaptcha;
 }

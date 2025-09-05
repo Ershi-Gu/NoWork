@@ -1,5 +1,7 @@
 package com.ershi.common.domain;
 
+import cn.hutool.extra.servlet.JakartaServletUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,7 +15,9 @@ import lombok.Data;
 @Builder
 public class RequestInfo {
 
-    /** 唯一请求id */
+    /**
+     * 唯一请求id
+     */
     private String requestId;
 
     /**
@@ -25,4 +29,16 @@ public class RequestInfo {
      * 用户ip
      */
     private String ip;
+
+    /**
+     * 根据request快速构造RequestInfo
+     *
+     * @param request
+     * @return {@link RequestInfo }
+     */
+    public static RequestInfo build(HttpServletRequest request) {
+        return RequestInfo.builder()
+                .ip(JakartaServletUtil.getClientIP(request))
+                .build();
+    }
 }

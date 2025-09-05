@@ -2,11 +2,14 @@ package com.ershi.user.service.impl;
 
 
 import com.ershi.common.exception.BusinessErrorEnum;
+import com.ershi.common.manager.RedissonManager;
 import com.ershi.common.utils.AssertUtil;
+import com.ershi.common.utils.RequestHolder;
 import com.ershi.user.manager.CaptchaManager;
 import com.ershi.user.manager.EmailManager;
 import jakarta.annotation.Resource;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.redisson.api.RateIntervalUnit;
 import org.springframework.stereotype.Service;
 import com.ershi.user.service.IUserService;
 import com.ershi.user.domain.entity.UserEntity;
@@ -24,20 +27,37 @@ import java.util.List;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements IUserService {
 
-    @Resource
-    private EmailManager emailManager;
+    /**
+     * 邮箱验证周期内允许请求次数
+     */
+    public static final long EMAIL_CAPTCHA_RATE = 1L;
+
+    /**
+     * 邮箱验证限流周期(s)
+     */
+    public static final long EMAIL_CAPTCHA_INTERVAL = 120L;
 
     /**
      * 邮箱格式验证器
      */
     private static final EmailValidator EMAIL_VALIDATOR = EmailValidator.getInstance();
 
+    @Resource
+    private EmailManager emailManager;
+
+    @Resource
+    private RedissonManager redissonManager;
+
     @Override
     public void sendEmailCaptcha(String email) {
         // 校验邮件格式
         validateEmail(email);
 
-        // 生成验证码
+        // ip限流，120s内仅可请求一次
+        redissonManager.doOverallRateLimit(RequestHolder.get().getIp(),
+                EMAIL_CAPTCHA_RATE, EMAIL_CAPTCHA_INTERVAL, RateIntervalUnit.SECONDS);
+
+        // 生成验证码，有效期5分钟
         String emailCaptcha = CaptchaManager.generateEmailCaptcha();
 
         // 发送邮件

@@ -9,7 +9,6 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -20,7 +19,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,33 +48,44 @@ public class LogAspect {
         // 计时
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
+
         // 生成唯一请求 id78
         String requestId = redisIdWorker.nextId();
-        // 获取请求信息
+
+        // 获取方法和url
         HttpServletRequest request = ((ServletRequestAttributes)Objects.requireNonNull(
             RequestContextHolder.getRequestAttributes())).getRequest();
         String method = request.getMethod();
         String uri = request.getRequestURI();
+
         // 获取请求参数，如果参数有 HttpRequest,ServletResponse，移除不打印
         List<Object> paramList = Stream.of(joinPoint.getArgs()).filter(args -> !(args instanceof ServletRequest))
             .filter(args -> !(args instanceof ServletResponse)).collect(Collectors.toList());
         String printParamStr =
             paramList.size() == 1 ? JSONUtil.toJsonStr(paramList.get(0)) : JSONUtil.toJsonStr(paramList);
-        // 获取请求用户信息
+
+        // 获取请求上下文信息
         RequestInfo requestInfo = RequestHolder.get();
+        // 设置请求id到上下文信息中
+        requestInfo.setRequestId(requestId);
+
         String userHeaderStr = JSONUtil.toJsonStr(requestInfo);
         if (log.isInfoEnabled()) {
             log.info("request start，id: {}, method: {}，uri: {}，userInfo: {}，param: {}", requestId, method, uri,
                 userHeaderStr, printParamStr);
         }
+
         // 执行原方法
         Object result = joinPoint.proceed();
+
         // 统计耗时
         stopWatch.stop();
+
         long totalTimeMillis = stopWatch.getTotalTimeMillis();
         if (log.isInfoEnabled()) {
-            log.info("request end, id: {}，cost: {}", requestId, totalTimeMillis);
+            log.info("request end, id: {}，cost: {}ms", requestId, totalTimeMillis);
         }
+
         return result;
     }
 }

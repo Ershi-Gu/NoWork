@@ -15,6 +15,11 @@ public class RedisKey {
     public static final String REQUEST_ID_KEY = "requestId:%s";
 
     /**
+     * redisson限流器key
+     */
+    public static final String REDISSON_RATE_LIMITER_KEY = "redissonRateLimiter:%s";
+
+    /**
      * 热榜数据列表
      */
     public static final String HOT_BOARD_LIST_KEY = "hotBoardList";

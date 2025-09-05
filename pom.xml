@@ -56,6 +56,7 @@
         <chat.version>1.0-SNAPSHOT</chat.version>
 
         <!-- 第三方依赖 -->
+        <sa-token.version>1.44.0</sa-token.version>
         <mybatis-flex.version>1.11.1</mybatis-flex.version>
         <netty-all.version>4.1.76.Final</netty-all.version>
         <redisson.version>3.22.0</redisson.version>
@@ -66,6 +67,7 @@
         <knife4j.version>4.6.0</knife4j.version>
         <commons-validaor.version>1.7</commons-validaor.version>
         <mail.version>3.5.5</mail.version>
+        <spring-security-crypto.version>6.5.3</spring-security-crypto.version>
     </properties>
 
     <dependencyManagement>
@@ -97,6 +99,11 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-mail</artifactId>
                 <version>${mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-crypto</artifactId>
+                <version>${spring-security-crypto.version}</version>
             </dependency>
 
             <!-- datasource -->
@@ -133,6 +140,19 @@
             </dependency>
 
             <!-- common-util -->
+            <!-- Sa-Token 权限认证，在线文档：https://sa-token.cc -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-spring-boot3-starter</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+            <!-- Sa-Token 集成 Redis-->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-template</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>

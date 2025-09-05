@@ -20,6 +20,11 @@ public class RedisKey {
     public static final String HOT_BOARD_LIST_KEY = "hotBoardList";
 
     /**
+     * 邮箱注册验证码
+     */
+    public static final String REGISTER_EMAIL_CAPTCHA_KEY = "registerEmailCaptcha:%s";
+
+    /**
      * 获取key
      *
      * @param key 带有模板字符串的key

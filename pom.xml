@@ -37,6 +37,8 @@
     <modules>
         <module>common</module>
         <module>hot-board</module>
+        <module>user</module>
+        <module>chat</module>
         <module>main-app</module>
     </modules>
 
@@ -50,6 +52,8 @@
         <!-- 项目模块依赖 -->
         <common.version>1.0-SNAPSHOT</common.version>
         <hot-board.version>1.0-SNAPSHOT</hot-board.version>
+        <user.version>1.0-SNAPSHOT</user.version>
+        <chat.version>1.0-SNAPSHOT</chat.version>
 
         <!-- 第三方依赖 -->
         <mybatis-flex.version>1.11.1</mybatis-flex.version>
@@ -60,6 +64,8 @@
         <hutool-all.version>5.8.38</hutool-all.version>
         <fastjson2.version>2.0.58</fastjson2.version>
         <knife4j.version>4.6.0</knife4j.version>
+        <commons-validaor.version>1.7</commons-validaor.version>
+        <mail.version>3.5.5</mail.version>
     </properties>
 
     <dependencyManagement>
@@ -74,6 +80,23 @@
                 <groupId>com.ershi</groupId>
                 <artifactId>hot-board</artifactId>
                 <version>${hot-board.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ershi</groupId>
+                <artifactId>user</artifactId>
+                <version>${user.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ershi</groupId>
+                <artifactId>chat</artifactId>
+                <version>${chat.version}</version>
+            </dependency>
+
+            <!--springboot-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-mail</artifactId>
+                <version>${mail.version}</version>
             </dependency>
 
             <!-- datasource -->
@@ -125,6 +148,12 @@
                 <artifactId>fastjson2</artifactId>
                 <version>${fastjson2.version}</version>
             </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${commons-validaor.version}</version>
+            </dependency>
+
 
             <!-- test -->
             <dependency>

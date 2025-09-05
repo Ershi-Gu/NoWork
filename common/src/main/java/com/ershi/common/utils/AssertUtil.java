@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.ershi.common.exception.BusinessErrorEnum;
 import com.ershi.common.exception.BusinessException;
 import com.ershi.common.exception.ErrorEnum;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -84,6 +85,30 @@ public class AssertUtil {
 
     public static void notEqual(Object o1, Object o2, ErrorEnum errorEnum, Object... args) {
         if (ObjectUtil.equal(o1, o2)) {
+            throwException(errorEnum, args);
+        }
+    }
+
+    public static void isBlank(String str, String msg) {
+        if (StringUtils.isNotBlank(str)) {
+                throwException(msg);
+            }
+        }
+
+        public static void isBlank(String str, ErrorEnum errorEnum, Object... args) {
+            if (StringUtils.isNotBlank(str)) {
+                throwException(errorEnum, args);
+        }
+    }
+
+    public static void isNotBlank(String str, String msg) {
+        if (StringUtils.isBlank(str)) {
+            throwException(msg);
+        }
+    }
+
+    public static void isNotBlank(String str, ErrorEnum errorEnum, Object... args) {
+        if (StringUtils.isBlank(str)) {
             throwException(errorEnum, args);
         }
     }

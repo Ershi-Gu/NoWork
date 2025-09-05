@@ -16,9 +16,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(scanBasePackages = {
         "com.ershi.common",
         "com.ershi.hotboard",
+        "com.ershi.user",
 })
 @MapperScan(value = {
-        "com.ershi.hotboard.mapper"
+        "com.ershi.hotboard.mapper",
+        "com.ershi.user.mapper",
 })
 @EnableAspectJAutoProxy(exposeProxy = true)
 @EnableAsync

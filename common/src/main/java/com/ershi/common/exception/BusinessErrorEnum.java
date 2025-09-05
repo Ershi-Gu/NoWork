@@ -11,6 +11,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum BusinessErrorEnum implements ErrorEnum {
     COMMON_ERROR(19999, "业务异常"),
+    REGISTER_EMAIL_ERROR(19998, "注册邮箱异常"),
+    EMAIL_ERROR(19993, "邮箱服务异常"),
     ;
 
     private final Integer errorCode;

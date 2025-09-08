@@ -13,6 +13,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import static com.ershi.user.domain.entity.table.UserEntityTableDef.USER_ENTITY;
 
@@ -22,6 +23,7 @@ import static com.ershi.user.domain.entity.table.UserEntityTableDef.USER_ENTITY;
  * @author Ershi-Gu.
  * @since 2025-09-08
  */
+@Component
 public class EmailLoginStrategy implements ILoginStrategy{
 
     @Resource

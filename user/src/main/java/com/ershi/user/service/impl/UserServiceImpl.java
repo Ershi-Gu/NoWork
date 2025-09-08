@@ -131,6 +131,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
 
     @Override
     public UserLoginVO login(UserLoginReq userLoginReq) {
+        // 参数验证
         String type = userLoginReq.getType();
         String identifier = userLoginReq.getIdentifier();
         String credential = userLoginReq.getCredential();

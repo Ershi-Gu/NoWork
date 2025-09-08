@@ -8,6 +8,7 @@ import com.ershi.user.domain.dto.UserLoginReq;
 import com.ershi.user.domain.entity.UserEntity;
 import com.ershi.user.domain.enums.LoginTypeEnum;
 import com.ershi.user.domain.vo.UserLoginVO;
+import com.ershi.user.manager.CaptchaVerifyManager;
 import com.ershi.user.mapper.UserMapper;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
@@ -32,6 +33,9 @@ public class EmailLoginStrategy implements ILoginStrategy{
     @Resource
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Resource
+    private CaptchaVerifyManager captchaVerifyManager;
+
     @Override
     public LoginTypeEnum getLoginType() {
         return LoginTypeEnum.EMAIL;
@@ -43,6 +47,11 @@ public class EmailLoginStrategy implements ILoginStrategy{
         String password = userLoginReq.getCredential();
         AssertUtil.isFalse(StringUtils.isAnyBlank(email, password),
                 BusinessErrorEnum.API_PARAM_ERROR, "请输入账号密码");
+
+        // 二次校验验证码
+        String captchaVerification = userLoginReq.getCaptchaVerification();
+        AssertUtil.isNotBlank(captchaVerification, BusinessErrorEnum.CAPTCHA_ERROR);
+        AssertUtil.isTrue(captchaVerifyManager.verify(captchaVerification), BusinessErrorEnum.USER_LOGIN_ERROR);
 
         // 判断邮箱是否存在
         UserEntity user = userMapper.selectOneByQuery(QueryWrapper.create().where(USER_ENTITY.EMAIL.eq(email)));

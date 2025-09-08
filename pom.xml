@@ -68,6 +68,7 @@
         <commons-validaor.version>1.7</commons-validaor.version>
         <mail.version>3.5.5</mail.version>
         <spring-security-crypto.version>6.5.3</spring-security-crypto.version>
+        <captcha.version>1.4.0</captcha.version>
     </properties>
 
     <dependencyManagement>
@@ -151,6 +152,13 @@
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-redis-template</artifactId>
                 <version>${sa-token.version}</version>
+            </dependency>
+
+            <!--captcha-plus-->
+            <dependency>
+                <groupId>com.anji-plus</groupId>
+                <artifactId>captcha-spring-boot-starter</artifactId>
+                <version>${captcha.version}</version>
             </dependency>
 
             <dependency>

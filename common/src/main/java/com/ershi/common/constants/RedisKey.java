@@ -20,6 +20,11 @@ public class RedisKey {
     public static final String REDISSON_RATE_LIMITER_KEY = "redissonRateLimiter:%s";
 
     /**
+     * anji-captcha
+     */
+    public static final String ANJI_CAPTCHA_KEY = "captcha:%s";
+
+    /**
      * 热榜数据列表
      */
     public static final String HOT_BOARD_LIST_KEY = "hotBoardList";

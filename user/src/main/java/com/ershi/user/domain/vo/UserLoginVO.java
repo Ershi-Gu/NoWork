@@ -1,7 +1,8 @@
 package com.ershi.user.domain.vo;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.ershi.user.domain.entity.UserEntity;
 import lombok.Data;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -78,5 +79,16 @@ public class UserLoginVO {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    /**
+     * 实体类转换VO
+     * @param userEntity
+     * @return {@link UserLoginVO }
+     */
+    public static UserLoginVO objectToVO(UserEntity userEntity) {
+        UserLoginVO userLoginVO = new UserLoginVO();
+        BeanUtil.copyProperties(userEntity, userLoginVO);
+        return userLoginVO;
+    }
 
 }

@@ -8,10 +8,14 @@ package com.ershi.common.constants;
  */
 public class RedisKey {
 
-    /** 项目基础key */
+    /**
+     * 项目基础key
+     */
     private static final String BASE_KEY = "noWork:";
 
-    /** 请求唯一id */
+    /**
+     * 请求唯一id
+     */
     public static final String REQUEST_ID_KEY = "requestId:%s";
 
     /**
@@ -33,6 +37,21 @@ public class RedisKey {
      * 邮箱注册验证码
      */
     public static final String REGISTER_EMAIL_CAPTCHA_KEY = "registerEmailCaptcha:%s";
+
+    /**
+     * 登录用户信息缓存
+     */
+    public static final String LOGIN_USER_INFO_KEY = "login:userInfo:%d";
+
+    /**
+     * 在线用户表单
+     */
+    public static final String ONLINE_UID_ZET = "online:uid";
+
+    /**
+     * 离线用户表单
+     */
+    public static final String OFFLINE_UID_ZET = "offline:uid";
 
     /**
      * 获取key

@@ -58,7 +58,7 @@
         <!-- 第三方依赖 -->
         <sa-token.version>1.44.0</sa-token.version>
         <mybatis-flex.version>1.11.1</mybatis-flex.version>
-        <netty-all.version>4.1.76.Final</netty-all.version>
+        <netty-all.version>4.2.4.Final</netty-all.version>
         <redisson.version>3.22.0</redisson.version>
         <mysql-connector-java.vesion>8.0.33</mysql-connector-java.vesion>
         <lombok.version>1.18.30</lombok.version>

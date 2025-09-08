@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "com.ershi.common",
         "com.ershi.hotboard",
         "com.ershi.user",
+        "com.ershi.chat",
         "com.anji" // 引入anji-captcha核心包
 })
 @MapperScan(value = {

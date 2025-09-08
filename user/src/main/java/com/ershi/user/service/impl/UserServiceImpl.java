@@ -9,25 +9,23 @@ import com.ershi.common.manager.RedissonManager;
 import com.ershi.common.utils.AssertUtil;
 import com.ershi.common.utils.RedisUtils;
 import com.ershi.common.utils.RequestHolder;
-import com.ershi.user.config.BCryptEncoderConfig;
 import com.ershi.user.domain.dto.UserEmailRegisterReq;
 import com.ershi.user.domain.dto.UserLoginReq;
+import com.ershi.user.domain.entity.UserEntity;
 import com.ershi.user.domain.vo.UserLoginVO;
 import com.ershi.user.manager.CaptchaManager;
 import com.ershi.user.manager.EmailManager;
+import com.ershi.user.mapper.UserMapper;
 import com.ershi.user.service.ILoginService;
+import com.ershi.user.service.IUserService;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.spring.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.redisson.api.RateIntervalUnit;
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.ershi.user.service.IUserService;
-import com.ershi.user.domain.entity.UserEntity;
-import com.ershi.user.mapper.UserMapper;
-import com.mybatisflex.spring.service.impl.ServiceImpl;
 
 import java.util.List;
 
@@ -43,6 +41,18 @@ import static com.ershi.user.domain.entity.table.UserEntityTableDef.USER_ENTITY;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements IUserService {
 
+    @Resource
+    private EmailManager emailManager;
+
+    @Resource
+    private RedissonManager redissonManager;
+
+    @Resource
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Resource
+    private ILoginService loginService;
+
     /**
      * 邮箱验证周期内允许请求次数
      */
@@ -57,18 +67,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
      * 邮箱格式验证器
      */
     private static final EmailValidator EMAIL_VALIDATOR = EmailValidator.getInstance();
-
-    @Resource
-    private EmailManager emailManager;
-
-    @Resource
-    private RedissonManager redissonManager;
-
-    @Resource
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Resource
-    private ILoginService loginService;
 
     @Override
     public void sendEmailCaptcha(String email) {

@@ -4,6 +4,8 @@ import com.ershi.common.constants.RedisKey;
 import com.ershi.common.exception.BusinessErrorEnum;
 import com.ershi.common.exception.BusinessException;
 import com.ershi.common.exception.SystemCommonErrorEnum;
+import com.ershi.common.utils.AssertUtil;
+import com.ershi.common.utils.RequestHolder;
 import jakarta.annotation.Resource;
 import org.redisson.api.RRateLimiter;
 import org.redisson.api.RateIntervalUnit;
@@ -40,9 +42,7 @@ public class RedissonManager {
         // 每次请求消耗1个令牌
         boolean canProceed = rateLimiter.tryAcquire(1);
 
-        if (!canProceed) {
-            throw new BusinessException(SystemCommonErrorEnum.LOCK_LIMIT);
-        }
+        AssertUtil.isTrue(canProceed, SystemCommonErrorEnum.LOCK_LIMIT, RequestHolder.get().getIp());
     }
 
 }

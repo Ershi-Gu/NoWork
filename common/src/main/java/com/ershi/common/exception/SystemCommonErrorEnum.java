@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 public enum SystemCommonErrorEnum implements ErrorEnum {
 
     REDIS_ERROR(30001, "Redis 异常，请稍后再试"),
-    LOCK_LIMIT(42900, "请求太频繁了，请稍后再试"),
+    LOCK_LIMIT(42900, "ip:{0}，请求太频繁了，请稍后再试"),
     SYSTEM_ERROR(50000, "系统异常，请稍后再试"),
     DB_ERROR(50001, "数据库异常，请稍后再试"),
     ;

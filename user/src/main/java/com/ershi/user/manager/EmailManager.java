@@ -8,6 +8,7 @@ import com.ershi.common.utils.RedisUtils;
 import com.ershi.user.constants.EmailTemplate;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
  * @author Ershi-Gu.
  * @since 2025-09-05
  */
+@Slf4j
 @Component
 public class EmailManager {
 
@@ -72,7 +74,7 @@ public class EmailManager {
             RedisUtils.set(RedisKey.getKey(RedisKey.REGISTER_EMAIL_CAPTCHA_KEY, email), captcha, CAPTCHA_EXPIRE_TIME);
 
         } catch (Exception e) {
-            throw new BusinessException(BusinessErrorEnum.EMAIL_ERROR.getErrorCode(), "注册邮件发送失败");
+            log.error("注册邮件发送失败, email={}, captcha={}", email, captcha, e);
         }
 
     }

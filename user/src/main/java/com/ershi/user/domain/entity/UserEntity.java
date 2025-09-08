@@ -7,6 +7,7 @@ import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
 import java.lang.Long;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.lang.String;
 import java.lang.Integer;
@@ -79,7 +80,7 @@ public class UserEntity {
      * 最后登录时间
      */
     @Column(value = "last_login_time")
-    private Date lastLoginTime;
+    private LocalDateTime lastLoginTime;
 
     /**
      * ip解析信息
@@ -91,13 +92,13 @@ public class UserEntity {
      * 创建时间
      */
     @Column(value = "create_time")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
     @Column(value = "update_time")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 是否删除：0-否，1-是

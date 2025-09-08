@@ -9,9 +9,13 @@ import com.ershi.common.manager.RedissonManager;
 import com.ershi.common.utils.AssertUtil;
 import com.ershi.common.utils.RedisUtils;
 import com.ershi.common.utils.RequestHolder;
+import com.ershi.user.config.BCryptEncoderConfig;
 import com.ershi.user.domain.dto.UserEmailRegisterReq;
+import com.ershi.user.domain.dto.UserLoginReq;
+import com.ershi.user.domain.vo.UserLoginVO;
 import com.ershi.user.manager.CaptchaManager;
 import com.ershi.user.manager.EmailManager;
+import com.ershi.user.service.ILoginService;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -54,16 +58,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
      */
     private static final EmailValidator EMAIL_VALIDATOR = EmailValidator.getInstance();
 
-    /**
-     * 密码加密编码器
-     */
-    private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
-
     @Resource
     private EmailManager emailManager;
 
     @Resource
     private RedissonManager redissonManager;
+
+    @Resource
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Resource
+    private ILoginService loginService;
 
     @Override
     public void sendEmailCaptcha(String email) {
@@ -109,11 +114,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         RedisUtils.del(captchaRedisKey);
 
         // 用户数据2DB
-        String encodedPassword = PASSWORD_ENCODER.encode(password);
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
         UserEntity registerUser = new UserEntity();
-        registerUser.setAccount(account != null ? account : "email-" + email);
+        registerUser.setAccount(account != null ? account : "邮箱注册用户:" + email);
         registerUser.setPassword(encodedPassword);
-        registerUser.setName("默认用户");
+        registerUser.setName("快取个名字吧~");
         registerUser.setEmail(email);
         boolean save = this.save(registerUser);
 
@@ -122,6 +127,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         // 获取token返回，前端可用于注册后直接登录
         StpUtil.login(registerUser.getId());
         return StpUtil.getTokenValue();
+    }
+
+    @Override
+    public UserLoginVO login(UserLoginReq userLoginReq) {
+        String type = userLoginReq.getType();
+        String identifier = userLoginReq.getIdentifier();
+        String credential = userLoginReq.getCredential();
+        AssertUtil.isFalse(StringUtils.isAnyBlank(type, identifier, credential), BusinessErrorEnum.USER_LOGIN_ERROR);
+
+        return loginService.login(userLoginReq);
     }
 
     /**

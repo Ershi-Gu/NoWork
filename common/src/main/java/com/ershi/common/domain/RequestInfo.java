@@ -1,9 +1,12 @@
 package com.ershi.common.domain;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.Optional;
 
 /**
  * Web 请求相关信息
@@ -37,8 +40,15 @@ public class RequestInfo {
      * @return {@link RequestInfo }
      */
     public static RequestInfo build(HttpServletRequest request) {
+        Long uid = Optional.ofNullable(StpUtil.getLoginIdDefaultNull())
+                .map(o -> Long.valueOf(o.toString()))
+                // 未登录时默认为null
+                .orElse(null);
+
         return RequestInfo.builder()
+                .uid(uid)
                 .ip(JakartaServletUtil.getClientIP(request))
                 .build();
+
     }
 }

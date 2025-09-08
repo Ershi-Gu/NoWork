@@ -3,6 +3,8 @@ package com.ershi.user.controller;
 import com.ershi.common.resp.ApiResult;
 import com.ershi.user.domain.dto.UserEmailCaptchaReq;
 import com.ershi.user.domain.dto.UserEmailRegisterReq;
+import com.ershi.user.domain.dto.UserLoginReq;
+import com.ershi.user.domain.vo.UserLoginVO;
 import com.ershi.user.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,5 +39,17 @@ public class UserController {
     @PostMapping("/email/register")
     public ApiResult<String> emailRegister(@RequestBody UserEmailRegisterReq userEmailRegisterReq) {
         return ApiResult.success(userService.emailRegister(userEmailRegisterReq));
+    }
+
+    @Operation(summary = "用户登录")
+    @PostMapping("/login")
+    public ApiResult<UserLoginVO> userLogin(@RequestBody UserLoginReq userLoginReq) {
+        return ApiResult.success(userService.login(userLoginReq));
+    }
+
+    @Operation(summary = "用户登出")
+    @PostMapping("/logout")
+    public ApiResult<Void> userLogout() {
+        return ApiResult.success();
     }
 }

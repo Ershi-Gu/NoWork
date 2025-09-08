@@ -16,6 +16,8 @@ public enum BusinessErrorEnum implements ErrorEnum {
     API_PARAM_ERROR(19996, "接口参数错误"),
     EMAIL_EXIST_ERROR(19995, "该邮箱已注册"),
     EMAIL_CAPTCHA_ERROR(19994, "邮箱验证码错误"),
+    USER_LOGIN_ERROR(19993, "登录失败，请检查账号密码"),
+    LOGIN_STRATEGY_ERROR(19992, "登录方式错误"),
     ;
 
     private final Integer errorCode;

@@ -83,15 +83,11 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         // 3. token有效 -> 获取当前登录用户信息
         UserEntity loginUser = userMapper.selectOneByQuery(QueryWrapper.create().where(USER_ENTITY.ID.eq(loginIdByToken)));
 
-        // 3.1 更新用户在线状态
-        online(channel, loginUser);
-        UserLoginVO userLoginVO = UserLoginVO.objectToVO(loginUser);
+        // 3.1 用户上线，更新信息，发送事件
+        UserLoginVO userLoginVO = online(channel, loginUser);
 
         // 3.2 推送前端授权成功后的用户信息
         sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.AUTHORIZE_SUCCESS.getType(), userLoginVO));
-
-        // 3.3 发送用户上线事件
-        applicationEventPublisher.publishEvent(new UserOnlineEvent(this, loginUser, userLoginVO));
     }
 
     /**
@@ -101,7 +97,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
      * @return {@link UserEntity }
      */
     @Override
-    public void online(Channel channel, UserEntity loginUser) {
+    public UserLoginVO online(Channel channel, UserEntity loginUser) {
         // 更新活跃连接池，记录uid
         WSChannelExtraDTO wsChannelExtraDTO = ACTIVE_CHANNELS_MAP.computeIfAbsent(channel, k -> new WSChannelExtraDTO());
         wsChannelExtraDTO.setUid(loginUser.getId());
@@ -116,6 +112,12 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         loginUser.setLastLoginTime(LocalDateTime.now());
         // 更新在线状态
         loginUser.setActiveStatus(UserActiveTypeEnum.ONLINE.getType());
+
+        UserLoginVO userLoginVO = UserLoginVO.objectToVO(loginUser);
+
+        // 发送上线事件
+        applicationEventPublisher.publishEvent(new UserOnlineEvent(this, loginUser, userLoginVO));
+        return userLoginVO;
     }
 
     /**
@@ -152,9 +154,13 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
 
         // 若全下线则发出用户下线事件
         if (uidOptional.isPresent() && offlineAll) {
+            // 更新用户在线状态
             UserEntity user = new UserEntity();
             user.setId(uidOptional.get());
+            user.setActiveStatus(UserActiveTypeEnum.OFFLINE.getType());
             user.setLastLoginTime(LocalDateTime.now());
+
+            // 发出用户下线事件
             applicationEventPublisher.publishEvent(new UserOfflineEvent(this, user));
         }
     }

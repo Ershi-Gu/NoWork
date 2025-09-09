@@ -1,6 +1,7 @@
 package com.ershi.chat.websocket.service;
 
 import com.ershi.user.domain.entity.UserEntity;
+import com.ershi.user.domain.vo.UserLoginVO;
 import io.netty.channel.Channel;
 
 /**
@@ -22,7 +23,7 @@ public interface ChatWebSocketService {
      * @param channel
      * @param loginUser
      */
-    void online(Channel channel, UserEntity loginUser);
+    UserLoginVO online(Channel channel, UserEntity loginUser);
 
     /**
      * 用户下线

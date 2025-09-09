@@ -13,10 +13,10 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class UserOfflineEvent extends ApplicationEvent {
 
-    private final UserEntity user;
+    private final UserEntity userEntity;
 
-    public UserOfflineEvent(Object source, UserEntity user) {
+    public UserOfflineEvent(Object source, UserEntity userEntity) {
         super(source);
-        this.user = user;
+        this.userEntity = userEntity;
     }
 }

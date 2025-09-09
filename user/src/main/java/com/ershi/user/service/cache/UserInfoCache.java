@@ -49,18 +49,30 @@ public class UserInfoCache extends AbstractRedisStringCache<Long, UserEntity> {
     }
 
     /**
-     * 更新在线用户表
+     * 用户上线更新在线用户表
      *
-     * @param userLoginVO
+     * @param uid
+     * @param lastLoginTime
      */
-    public void online(UserLoginVO userLoginVO) {
-        Long uid = userLoginVO.getId();
-        LocalDateTime lastLoginTime = userLoginVO.getLastLoginTime();
-
+    public void online(Long uid, LocalDateTime lastLoginTime) {
         // 移除离线表
         RedisUtils.zRemove(RedisKey.getKey(RedisKey.OFFLINE_UID_ZET), uid);
-        // 更新上线表
+        // 更新在线表
         RedisUtils.zAdd(RedisKey.getKey(RedisKey.ONLINE_UID_ZET), uid,
+                lastLoginTime.atZone(ZoneId.systemDefault()).toEpochSecond());
+    }
+
+    /**
+     * 用户下线更新在线用户表
+     *
+     * @param uid
+     * @param lastLoginTime
+     */
+    public void offline(Long uid, LocalDateTime lastLoginTime) {
+        // 移除在线表
+        RedisUtils.zRemove(RedisKey.getKey(RedisKey.ONLINE_UID_ZET), uid);
+        // 更新离线表
+        RedisUtils.zAdd(RedisKey.getKey(RedisKey.OFFLINE_UID_ZET), uid,
                 lastLoginTime.atZone(ZoneId.systemDefault()).toEpochSecond());
     }
 }

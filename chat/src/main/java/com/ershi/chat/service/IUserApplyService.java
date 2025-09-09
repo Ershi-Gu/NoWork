@@ -2,6 +2,7 @@ package com.ershi.chat.service;
 
 
 import com.ershi.chat.domain.UserApplyEntity;
+import com.ershi.chat.domain.dto.FriendApplyReq;
 import com.mybatisflex.core.service.IService;
 
 /**
@@ -12,4 +13,10 @@ import com.mybatisflex.core.service.IService;
  */
 public interface IUserApplyService extends IService<UserApplyEntity> {
 
+    /**
+     * 申请添加好友
+     *
+     * @param friendApplyReq
+     */
+    void applyFriend(FriendApplyReq friendApplyReq);
 }

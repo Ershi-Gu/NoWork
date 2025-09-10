@@ -17,6 +17,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -97,7 +98,15 @@ public class HotBoardAsyncJob {
             // 小时转毫秒
             long updateIntervalMillis = oldData.getUpdateInterval()
                     .multiply(new BigDecimal(3600 * 1000)).longValue();
-            long nextUpdateTime = oldData.getUpdateTime().getTime() + updateIntervalMillis;
+
+            // LocalDateTime -> Instant -> 毫秒时间戳
+            long lastUpdateMillis = oldData.getUpdateTime()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli();
+
+            long nextUpdateTime = lastUpdateMillis + updateIntervalMillis;
+
             if (System.currentTimeMillis() < nextUpdateTime) {
                 log.info("==================> 数据源 [{}] 更新时间间隔未到，跳过", dataSource.getTypeEnum().getDesc());
                 return;

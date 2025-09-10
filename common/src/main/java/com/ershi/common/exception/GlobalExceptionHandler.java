@@ -1,5 +1,6 @@
 package com.ershi.common.exception;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import com.ershi.common.resp.ApiResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +15,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    /**
+     * 未登录异常
+     *
+     * @param e
+     * @return {@link ApiResult }<{@link Void }>
+     */
+    @ExceptionHandler(NotLoginException.class)
+    public ApiResult<Void> notLoginExceptionHandler(NotLoginException e) {
+        log.error("Not Login Exception！The reason is: {}", e.getMessage());
+        return ApiResult.fail(BusinessErrorEnum.USER_NOT_LOGIN_ERROR);
+    }
 
     /**
      * 业务异常处理

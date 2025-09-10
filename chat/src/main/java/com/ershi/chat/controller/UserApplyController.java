@@ -1,5 +1,6 @@
 package com.ershi.chat.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.ershi.chat.domain.dto.FriendApplyReq;
 import com.ershi.chat.domain.dto.FriendApproveReq;
 import com.ershi.chat.service.IUserApplyService;
@@ -26,6 +27,7 @@ public class UserApplyController {
 
     @Operation(summary = "申请添加好友")
     @PostMapping("/friend")
+    @SaCheckLogin
     public ApiResult<Void> applyFriend(@RequestBody FriendApplyReq friendApplyReq) {
         userApplyService.applyFriend(friendApplyReq.getTargetUid(),
                 friendApplyReq.getTargetAccount(), friendApplyReq.getApplyMsg());
@@ -34,6 +36,7 @@ public class UserApplyController {
 
     @Operation(summary = "审批好友申请")
     @PutMapping("/friend/approve")
+    @SaCheckLogin
     public ApiResult<Void> approveFriend(@RequestBody FriendApproveReq friendApproveReq) {
         userApplyService.approveFriend(friendApproveReq.getApplyId(), friendApproveReq.getStatus());
         return ApiResult.success();

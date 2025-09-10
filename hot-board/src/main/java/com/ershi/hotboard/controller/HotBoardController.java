@@ -1,6 +1,6 @@
 package com.ershi.hotboard.controller;
 
-import com.ershi.common.resp.ApiResult;
+import com.ershi.common.domain.vo.ApiResult;
 import com.ershi.hotboard.domain.vo.HotBoardVO;
 import com.ershi.hotboard.service.IHotBoardService;
 import io.swagger.v3.oas.annotations.Operation;

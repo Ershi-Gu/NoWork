@@ -1,7 +1,7 @@
 package com.ershi.common.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
-import com.ershi.common.resp.ApiResult;
+import com.ershi.common.domain.vo.ApiResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

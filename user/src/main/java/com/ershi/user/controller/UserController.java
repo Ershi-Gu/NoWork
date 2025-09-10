@@ -1,6 +1,6 @@
 package com.ershi.user.controller;
 
-import com.ershi.common.resp.ApiResult;
+import com.ershi.common.domain.vo.ApiResult;
 import com.ershi.user.domain.dto.UserEmailCaptchaReq;
 import com.ershi.user.domain.dto.UserEmailRegisterReq;
 import com.ershi.user.domain.dto.UserLoginReq;

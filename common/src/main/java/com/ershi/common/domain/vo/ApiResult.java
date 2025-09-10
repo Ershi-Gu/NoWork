@@ -1,4 +1,4 @@
-package com.ershi.common.resp;
+package com.ershi.common.domain.vo;
 
 import com.ershi.common.exception.ErrorEnum;
 import lombok.Data;

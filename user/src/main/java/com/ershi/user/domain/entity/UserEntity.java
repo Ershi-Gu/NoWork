@@ -6,11 +6,7 @@ import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import lombok.Data;
 
-import java.lang.Long;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.lang.String;
-import java.lang.Integer;
 
 /**
  * 用户表 实体类。

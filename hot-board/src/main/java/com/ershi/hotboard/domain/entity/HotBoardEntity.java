@@ -8,10 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.lang.Long;
-import java.util.Date;
-import java.lang.String;
-import java.lang.Integer;
+import java.time.LocalDateTime;
 
 /**
  * 热榜信息表 实体类。
@@ -82,13 +79,13 @@ public class HotBoardEntity {
      * 创建时间
      */
     @Column(value = "create_time")
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
     @Column(value = "update_time")
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * 是否删除：0-否，1-是

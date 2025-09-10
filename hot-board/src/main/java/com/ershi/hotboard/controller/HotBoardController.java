@@ -16,7 +16,7 @@ import java.util.List;
  * @author Ershi-Gu.
  * @since 2025-09-02
  */
-@Tag(name = "热榜数据Api")
+@Tag(name = "热榜数据")
 @RestController
 @RequestMapping("/hot")
 public class HotBoardController {

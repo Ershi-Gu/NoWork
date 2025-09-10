@@ -138,6 +138,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         return loginService.login(userLoginReq);
     }
 
+    @Override
+    public Long getUidByAccount(String targetAccount) {
+        UserEntity user = this.getOne(QueryWrapper.create().where(USER_ENTITY.ACCOUNT.eq(targetAccount)));
+        return user != null ? user.getId() : null;
+    }
+
     /**
      * 验证邮箱格式是否合法
      *

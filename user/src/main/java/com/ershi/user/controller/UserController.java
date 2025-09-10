@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author mybatis-flex-helper automatic generation
  * @since 1.0
  */
-@Tag(name = "用户模块api")
+@Tag(name = "用户模块")
 @RestController
 @RequestMapping("/user")
 public class UserController {

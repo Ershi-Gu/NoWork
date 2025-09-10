@@ -37,4 +37,12 @@ public interface IUserService extends IService<UserEntity> {
      * @return {@link UserLoginVO }
      */
     UserLoginVO login(UserLoginReq userLoginReq);
+
+    /**
+     * 查询目标账户uid
+     *
+     * @param targetAccount
+     * @return {@link Long } 若无用户则返回null
+     */
+    Long getUidByAccount(String targetAccount);
 }

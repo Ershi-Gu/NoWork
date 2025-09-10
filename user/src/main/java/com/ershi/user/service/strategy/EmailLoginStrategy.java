@@ -48,10 +48,10 @@ public class EmailLoginStrategy implements ILoginStrategy{
         AssertUtil.isFalse(StringUtils.isAnyBlank(email, password),
                 BusinessErrorEnum.API_PARAM_ERROR, "请输入账号密码");
 
-        // 二次校验验证码
-        String captchaVerification = userLoginReq.getCaptchaVerification();
-        AssertUtil.isNotBlank(captchaVerification, BusinessErrorEnum.CAPTCHA_ERROR);
-        AssertUtil.isTrue(captchaVerifyManager.verify(captchaVerification), BusinessErrorEnum.USER_LOGIN_ERROR);
+        // 二次校验验证码 todo 正式上线请打开该注释
+//        String captchaVerification = userLoginReq.getCaptchaVerification();
+//        AssertUtil.isNotBlank(captchaVerification, BusinessErrorEnum.CAPTCHA_ERROR);
+//        AssertUtil.isTrue(captchaVerifyManager.verify(captchaVerification), BusinessErrorEnum.USER_LOGIN_ERROR);
 
         // 判断邮箱是否存在
         UserEntity user = userMapper.selectOneByQuery(QueryWrapper.create().where(USER_ENTITY.EMAIL.eq(email)));

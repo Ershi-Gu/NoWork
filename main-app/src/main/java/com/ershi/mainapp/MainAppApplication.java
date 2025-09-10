@@ -23,6 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @MapperScan(value = {
         "com.ershi.hotboard.mapper",
         "com.ershi.user.mapper",
+        "com.ershi.chat.mapper"
 })
 @EnableAspectJAutoProxy(exposeProxy = true)
 @EnableAsync

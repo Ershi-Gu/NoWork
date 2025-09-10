@@ -19,6 +19,9 @@ public enum BusinessErrorEnum implements ErrorEnum {
     USER_LOGIN_ERROR(19993, "登录失败，请检查账号密码"),
     LOGIN_STRATEGY_ERROR(19992, "登录方式错误"),
     CAPTCHA_ERROR(19991, "验证码错误"),
+    USER_NOT_EXIST_ERROR(19990, "用户不存在"),
+    FRIEND_EXIST_ERROR(19989, "好友重复添加"),
+    APPLY_NOT_EXIST_ERROR(19988, "申请记录不存在"),
     ;
 
     private final Integer errorCode;

@@ -2,14 +2,13 @@ package com.ershi.chat.service.impl;
 
 
 import cn.hutool.extra.spring.SpringUtil;
+import com.ershi.chat.domain.RoomFriendEntity;
 import com.ershi.chat.domain.UserApplyEntity;
-import com.ershi.chat.domain.dto.FriendApplyReq;
-import com.ershi.chat.domain.dto.FriendApproveReq;
 import com.ershi.chat.domain.enums.UserApplyStatusEnum;
-import com.ershi.chat.domain.enums.UserApplyTypeEnum;
 import com.ershi.chat.event.ApplyFriendEvent;
 import com.ershi.chat.event.FriendAddedEvent;
 import com.ershi.chat.mapper.UserApplyMapper;
+import com.ershi.chat.service.IRoomFriendService;
 import com.ershi.chat.service.IUserApplyService;
 import com.ershi.chat.service.IUserFriendService;
 import com.ershi.chat.service.adapter.UserApplyAdapter;
@@ -48,6 +47,9 @@ public class UserApplyServiceImpl extends ServiceImpl<UserApplyMapper, UserApply
 
     @Resource
     private IUserService userService;
+
+    @Resource
+    private IRoomFriendService roomFriendService;
 
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
@@ -112,7 +114,9 @@ public class UserApplyServiceImpl extends ServiceImpl<UserApplyMapper, UserApply
         // 创建双方好友关系，db，注意此处targetId相反
         userFriendService.createFriend(uid, userApplyEntity.getUid());
 
-        // todo 创建单聊房间，db
+        // 创建单聊房间，db
+        RoomFriendEntity roomFriendEntity = roomFriendService.createRoomFriend(uid, userApplyEntity.getUid());
+
         // todo 发送好友添加成功事件 -> 向单聊房间发送一条消息
         applicationEventPublisher.publishEvent(new FriendAddedEvent(this));
     }

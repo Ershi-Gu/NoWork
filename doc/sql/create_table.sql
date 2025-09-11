@@ -79,3 +79,51 @@ create table if not exists user_apply
 ) engine = InnoDB
   character set utf8mb4
   collate utf8mb4_unicode_ci comment '用户申请表';
+
+-- 房间表
+create table if not exists room
+(
+    id          bigint(20)                         not null auto_increment primary key comment '房间id',
+    type        int                                not null comment '房间类型，0-全员群，1-单聊，2-群聊',
+    hot_flag    tinyint                            not null default 0 comment '是否是热点群聊，0-非热点，1-热点',
+    active_time datetime                           null comment '会话最后活跃时间',
+    last_msg_id bigint(20)                         null comment '最后一条消息id',
+    create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    is_delete   tinyint  default 0                 not null comment '是否删除：0-否，1-是'
+) engine = InnoDB
+  character set utf8mb4
+  collate utf8mb4_unicode_ci comment '房间表';
+
+-- 单聊房间表
+create table if not exists room_friend
+(
+    id          bigint(20)                         not null auto_increment primary key comment '单聊房间id',
+    room_id     bigint(20)                         not null comment '房间id',
+    uid1        bigint(20)                         not null comment '用户1id',
+    uid2        bigint(20)                         not null comment '用户2id',
+    room_key    varchar(32)                        not null comment '房间key，由两个uid拼接，uid1_uid2（uid1小）',
+    status      tinyint                            not null default 0 comment '0-正常，1-禁用',
+    create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    is_delete   tinyint  default 0                 not null comment '是否删除：0-否，1-是',
+    unique index idx_room_key (room_key)
+) engine = InnoDB
+  character set utf8mb4
+  collate utf8mb4_unicode_ci comment '单聊房间表';
+
+-- 群聊房间表
+create table if not exists room_group
+(
+    id          bigint(20)                         not null auto_increment primary key comment '群聊房间id',
+    room_id     bigint(20)                         not null comment '房间id',
+    name        varchar(255)                       not null comment '群名',
+    avatar_url  varchar(255)                       not null comment '群头像',
+    ext_json    json comment '群扩展信息',
+    create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    is_delete   tinyint  default 0                 not null comment '是否删除：0-否，1-是',
+    index idx_name (name)
+) engine = InnoDB
+  character set utf8mb4
+  collate utf8mb4_unicode_ci comment '群聊房间表';

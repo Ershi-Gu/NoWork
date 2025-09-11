@@ -4,10 +4,7 @@ import cn.hutool.extra.spring.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.Cursor;
-import org.springframework.data.redis.core.RedisConnectionUtils;
-import org.springframework.data.redis.core.ScanOptions;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
@@ -1040,6 +1037,30 @@ public class RedisUtils {
      */
     public static Double zScore(String key, Object value) {
         return stringRedisTemplate.opsForZSet().score(key, value);
+    }
+
+    /**
+     * 批量获取 ZSet 成员的 score (Redis 6.2+)
+     *
+     * @param key     ZSet key
+     * @param members 成员集合
+     * @return 与 members 一一对应的 score 列表，某个成员不存在则返回 null
+     */
+    public static List<Double> zMScore(String key, Collection<?> members) {
+        if (members == null || members.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return stringRedisTemplate.execute((RedisCallback<List<Double>>) connection -> {
+            byte[] rawKey = stringRedisTemplate.getStringSerializer().serialize(key);
+
+            byte[][] rawMembers = members.stream()
+                    .map(m -> stringRedisTemplate.getStringSerializer().serialize(String.valueOf(m)))
+                    .toArray(byte[][]::new);
+
+            // 调用原生命令
+            return connection.zMScore(rawKey, rawMembers);
+        });
     }
 
     /**

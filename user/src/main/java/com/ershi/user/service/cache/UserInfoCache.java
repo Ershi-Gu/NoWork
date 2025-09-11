@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 /**
@@ -74,5 +74,26 @@ public class UserInfoCache extends AbstractRedisStringCache<Long, UserEntity> {
         // 更新离线表
         RedisUtils.zAdd(RedisKey.getKey(RedisKey.OFFLINE_UID_ZET), uid,
                 lastLoginTime.atZone(ZoneId.systemDefault()).toEpochSecond());
+    }
+
+    /**
+     * 批量判断用户是否在线
+     *
+     * @param uidList
+     * @return {@link Map }<{@link Long }, {@link Boolean }> 在线返回true
+     */
+    public Map<Long, Boolean> isOnlineBatch(Collection<Long> uidList) {
+        if (uidList == null || uidList.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<Long> uidArray = new ArrayList<>(uidList);
+        List<Double> scores = RedisUtils.zMScore(RedisKey.getKey(RedisKey.ONLINE_UID_ZET), uidArray);
+
+        Map<Long, Boolean> result = new HashMap<>(uidArray.size());
+        for (int i = 0; i < uidArray.size(); i++) {
+            result.put(uidArray.get(i), scores.get(i) != null);
+        }
+        return result;
     }
 }

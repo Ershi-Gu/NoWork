@@ -2,6 +2,9 @@ package com.ershi.chat.service;
 
 
 import com.ershi.chat.domain.UserFriendEntity;
+import com.ershi.chat.domain.vo.FriendResp;
+import com.ershi.common.domain.dto.CursorPageBaseReq;
+import com.ershi.common.domain.vo.CursorPageBaseResp;
 import com.mybatisflex.core.service.IService;
 
 /**
@@ -28,4 +31,14 @@ public interface IUserFriendService extends IService<UserFriendEntity> {
      * @param targetId
      */
     void createFriend(Long uid, Long targetId);
+
+    /**
+     * 滑动获取好友列表
+     *
+     * @param uid
+     * @param cursorPageBaseReq
+     * @return {@link CursorPageBaseResp }<{@link FriendResp }>
+     */
+    CursorPageBaseResp<FriendResp> getFriendPage(Long uid, CursorPageBaseReq cursorPageBaseReq);
+
 }

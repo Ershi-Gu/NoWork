@@ -1,5 +1,7 @@
 package com.ershi.user.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.stp.StpUtil;
 import com.ershi.common.domain.vo.ApiResult;
 import com.ershi.user.domain.dto.UserEmailCaptchaReq;
 import com.ershi.user.domain.dto.UserEmailRegisterReq;
@@ -49,7 +51,9 @@ public class UserController {
 
     @Operation(summary = "用户登出")
     @PostMapping("/logout")
+    @SaCheckLogin
     public ApiResult<Void> userLogout() {
+        StpUtil.logout();
         return ApiResult.success();
     }
 }

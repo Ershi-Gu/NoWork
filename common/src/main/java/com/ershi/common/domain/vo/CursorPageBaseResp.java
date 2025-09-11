@@ -33,7 +33,7 @@ public class CursorPageBaseResp<T> {
     /**
      * 数据列表
      */
-    private List<T> list;
+    private List<T> dataList;
 
     /**
      * 初始化游标分页响应对象
@@ -45,7 +45,7 @@ public class CursorPageBaseResp<T> {
     public static <T> CursorPageBaseResp<T> init(CursorPageBaseResp cursorPage, List list) {
         CursorPageBaseResp<T> cursorPageBaseResp = new CursorPageBaseResp<T>();
         cursorPageBaseResp.setIsLast(cursorPage.getIsLast());
-        cursorPageBaseResp.setList(list);
+        cursorPageBaseResp.setDataList(list);
         cursorPageBaseResp.setCursor(cursorPage.getCursor());
         return cursorPageBaseResp;
     }
@@ -53,12 +53,12 @@ public class CursorPageBaseResp<T> {
     public static <T> CursorPageBaseResp<T> empty() {
         CursorPageBaseResp<T> cursorPageBaseResp = new CursorPageBaseResp<T>();
         cursorPageBaseResp.setIsLast(true);
-        cursorPageBaseResp.setList(new ArrayList<T>());
+        cursorPageBaseResp.setDataList(new ArrayList<T>());
         return cursorPageBaseResp;
     }
 
     @JsonIgnore
     public Boolean isEmpty() {
-        return CollectionUtil.isEmpty(list);
+        return CollectionUtil.isEmpty(dataList);
     }
 }

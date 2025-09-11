@@ -1,8 +1,10 @@
 package com.ershi.common.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
+import com.ershi.common.adapter.ErrorMsgAdapter;
 import com.ershi.common.domain.vo.ApiResult;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -26,6 +28,19 @@ public class GlobalExceptionHandler {
     public ApiResult<Void> notLoginExceptionHandler(NotLoginException e) {
         log.error("Not Login Exception！The reason is: {}", e.getMessage());
         return ApiResult.fail(BusinessErrorEnum.USER_NOT_LOGIN_ERROR);
+    }
+
+    /**
+     * validation 参数校验异常
+     *
+     * @param e
+     * @return {@link ApiResult}<{@link Void}>
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ApiResult<Void> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
+        String errorMsgStr = ErrorMsgAdapter.buildMethodArgumentNotValidErrorMsg(e);
+        log.error("Validation Parameters Error！The reason is: {}", errorMsgStr);
+        return ApiResult.fail(BusinessErrorEnum.API_PARAM_ERROR.getErrorCode(), errorMsgStr);
     }
 
     /**

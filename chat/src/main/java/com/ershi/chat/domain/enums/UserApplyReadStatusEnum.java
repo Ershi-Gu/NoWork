@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 @Getter
 public enum UserApplyReadStatusEnum {
 
-    READ(0, "已读"),
-    UNREAD(1, "未读"),
+    UNREAD(0, "未读"),
+    READ(1, "已读"),
     ;
 
     private final Integer type;

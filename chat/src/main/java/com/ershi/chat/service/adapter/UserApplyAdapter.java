@@ -1,9 +1,10 @@
 package com.ershi.chat.service.adapter;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ershi.chat.domain.UserApplyEntity;
-import com.ershi.chat.domain.enums.UserApplyReadStatusEnum;
 import com.ershi.chat.domain.enums.UserApplyStatusEnum;
 import com.ershi.chat.domain.enums.UserApplyTypeEnum;
+import com.ershi.chat.domain.vo.FriendApplyResp;
 
 /**
  * 用户申请记录构造器
@@ -29,5 +30,17 @@ public class UserApplyAdapter {
                 .msg(applyMsg)
                 .status(UserApplyStatusEnum.PENDING.getType())
                 .build();
+    }
+
+    /**
+     * 构造好友申请列表查询返回
+     *
+     * @param userApplyEntity
+     * @return {@link Object }
+     */
+    public static FriendApplyResp buildFriendApplyListResp(UserApplyEntity userApplyEntity) {
+        FriendApplyResp friendApplyResp = new FriendApplyResp();
+        BeanUtil.copyProperties(userApplyEntity, friendApplyResp);
+        return friendApplyResp;
     }
 }

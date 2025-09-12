@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author mybatis-flex-helper automatic generation
  * @since 1.0
  */
-@Tag(name = "好友模块")
+@Tag(name = "联系人模块")
 @RestController
 @RequestMapping("/friend")
 public class UserFriendController {

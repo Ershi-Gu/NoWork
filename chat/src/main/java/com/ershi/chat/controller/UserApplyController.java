@@ -3,12 +3,15 @@ package com.ershi.chat.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.ershi.chat.domain.dto.FriendApplyReq;
 import com.ershi.chat.domain.dto.FriendApproveReq;
+import com.ershi.chat.domain.vo.FriendApplyResp;
 import com.ershi.chat.service.IUserApplyService;
 import com.ershi.common.domain.vo.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 用户申请表 控制层。
@@ -41,4 +44,9 @@ public class UserApplyController {
         return ApiResult.success();
     }
 
+    @Operation(summary = "获取好友申请列表-仅展示10条")
+    @GetMapping("/friend/list")
+    public ApiResult<List<FriendApplyResp>> getFriendApplyList() {
+        return ApiResult.success(userApplyService.getFriendApplyList());
+    }
 }

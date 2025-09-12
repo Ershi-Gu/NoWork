@@ -4,7 +4,10 @@ package com.ershi.chat.service;
 import com.ershi.chat.domain.UserApplyEntity;
 import com.ershi.chat.domain.dto.FriendApplyReq;
 import com.ershi.chat.domain.dto.FriendApproveReq;
+import com.ershi.chat.domain.vo.FriendApplyResp;
 import com.mybatisflex.core.service.IService;
+
+import java.util.List;
 
 /**
  * 用户申请表 服务层。
@@ -30,4 +33,11 @@ public interface IUserApplyService extends IService<UserApplyEntity> {
      * @param status
      */
     void approveFriend(Long applyId, Integer status);
+
+    /**
+     * 获取好友申请列表
+     *
+     * @return {@link List }<{@link FriendApplyResp }>
+     */
+    List<FriendApplyResp> getFriendApplyList();
 }

@@ -4,7 +4,10 @@ package com.ershi.chat.service.impl;
 import cn.hutool.extra.spring.SpringUtil;
 import com.ershi.chat.domain.RoomFriendEntity;
 import com.ershi.chat.domain.UserApplyEntity;
+import com.ershi.chat.domain.enums.UserApplyReadStatusEnum;
 import com.ershi.chat.domain.enums.UserApplyStatusEnum;
+import com.ershi.chat.domain.enums.UserApplyTypeEnum;
+import com.ershi.chat.domain.vo.FriendApplyResp;
 import com.ershi.chat.event.ApplyFriendEvent;
 import com.ershi.chat.event.FriendAddedEvent;
 import com.ershi.chat.mapper.UserApplyMapper;
@@ -25,6 +28,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -121,6 +125,26 @@ public class UserApplyServiceImpl extends ServiceImpl<UserApplyMapper, UserApply
         applicationEventPublisher.publishEvent(new FriendAddedEvent(this));
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<FriendApplyResp> getFriendApplyList() {
+        Long uid = RequestHolder.get().getUid();
+        // 未登录状态下直接返回空列表
+        if (uid == null) {
+            return List.of();
+        }
+
+        // 查询前10条记录，待审批的在前
+        List<UserApplyEntity> userApplyList =
+                this.list(QueryWrapper.create().where(USER_APPLY_ENTITY.TARGET_ID.eq(uid))
+                        .limit(10)
+                        .orderBy(UserApplyEntity::getStatus, true));
+
+        // 已读当前用户所有好友申请记录
+        SpringUtil.getBean(UserApplyServiceImpl.class).readApples(uid, UserApplyTypeEnum.FRIEND.getType());
+
+        return userApplyList.stream().map(UserApplyAdapter::buildFriendApplyListResp).toList();
+    }
 
     /**
      * 获取最终请求目标uid，可根据账号查询，也可直接传入
@@ -165,4 +189,20 @@ public class UserApplyServiceImpl extends ServiceImpl<UserApplyMapper, UserApply
                 .and(USER_APPLY_ENTITY.STATUS.eq(UserApplyStatusEnum.PENDING.getType()))));
     }
 
+    /**
+     * 已读申请，按照申请type分类
+     *
+     * @param uid
+     * @param type
+     */
+    private void readApples(Long uid, Integer type) {
+        // 修改当前用户所有type类型的申请为已读
+        UserApplyEntity update = UserApplyEntity.builder()
+                .readStatus(UserApplyReadStatusEnum.READ.getType())
+                .build();
+        this.update(update, QueryWrapper.create()
+                .where(USER_APPLY_ENTITY.TARGET_ID.eq(uid)
+                        .and(USER_APPLY_ENTITY.TYPE.eq(type))
+                        .and(USER_APPLY_ENTITY.STATUS.eq(UserApplyStatusEnum.PENDING.getType()))));
+    }
 }

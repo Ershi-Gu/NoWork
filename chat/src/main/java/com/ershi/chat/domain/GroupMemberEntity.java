@@ -9,50 +9,42 @@ import lombok.Data;
 
 import java.lang.Long;
 import java.time.LocalDateTime;
-import java.lang.Object;
-import java.lang.String;
 import java.lang.Integer;
 
 /**
- * 群聊房间表 实体类。
+ * 群成员表 实体类。
  *
  * @author mybatis-flex-helper automatic generation
  * @since 1.0
  */
 @Data
 @Builder
-@Table(value = "room_group")
-public class RoomGroupEntity {
+@Table(value = "group_member")
+public class GroupMemberEntity {
 
     /**
-     * 群聊房间id
+     * 群成员id
      */
     @Id(keyType = KeyType.Auto)
     private Long id;
 
     /**
-     * 房间id
+     * 群组id
      */
-    @Column(value = "room_id")
-    private Long roomId;
+    @Column(value = "group_id")
+    private Long groupId;
 
     /**
-     * 群名
+     * 用户id
      */
-    @Column(value = "name")
-    private String name;
+    @Column(value = "uid")
+    private Long uid;
 
     /**
-     * 群头像
+     * 在群聊中所属角色，0-普通成员，1-管理员，2-群主
      */
-    @Column(value = "avatar_url")
-    private String avatarUrl;
-
-    /**
-     * 群扩展信息
-     */
-    @Column(value = "ext_json")
-    private Object extJson;
+    @Column(value = "role")
+    private Integer role;
 
     /**
      * 创建时间
@@ -71,5 +63,4 @@ public class RoomGroupEntity {
      */
     @Column(value = "is_delete")
     private Integer isDelete;
-
 }

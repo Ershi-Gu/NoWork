@@ -127,3 +127,19 @@ create table if not exists room_group
 ) engine = InnoDB
   character set utf8mb4
   collate utf8mb4_unicode_ci comment '群聊房间表';
+
+-- 群成员表
+create table if not exists group_member
+(
+    id          bigint(20)                         not null auto_increment primary key comment '群成员id',
+    group_id    bigint(20)                         not null comment '群组id',
+    uid         bigint(20)                         not null comment '用户id',
+    role        int                                not null default 0 comment '在群聊中所属角色，0-普通成员，1-管理员，2-群主',
+    create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    is_delete   tinyint  default 0                 not null comment '是否删除：0-否，1-是',
+    index idx_group_id_uid (group_id, uid),
+    index idx_uid (uid)
+) engine = InnoDB
+  character set utf8mb4
+  collate utf8mb4_unicode_ci comment '群成员表';

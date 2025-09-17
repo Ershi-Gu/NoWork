@@ -23,6 +23,11 @@ public enum BusinessErrorEnum implements ErrorEnum {
     USER_NOT_EXIST_ERROR(19989, "用户不存在"),
     FRIEND_EXIST_ERROR(19988, "好友重复添加"),
     APPLY_NOT_EXIST_ERROR(19987, "申请记录不存在"),
+    MSG_FORMAT_ERROR(19986, "客户端消息格式错误"),
+    ROOM_NOT_EXIST_ERROR(19985, "会话房间不存在"),
+    FRIEND_BLACK_ERROR(19984, "已被好友拉黑"),
+    FRIEND_NOT_EXIST_ERROR(19983, "好友不存在"),
+    MEMBER_NOT_EXIST_ERROR(19982, "群成员不存在"),
     ;
 
     private final Integer errorCode;

@@ -54,6 +54,21 @@ public class RedisKey {
     public static final String OFFLINE_UID_ZET = "offline:uid";
 
     /**
+     * 房间信息
+     */
+    public static final String ROOM_KEY = "roomInfo:roomId_%d";
+
+    /**
+     * 单聊房间缓存信息
+     */
+    public static final String ROOM_FRIEND_KEY = "roomFriend:roomFriendId_%d";
+
+    /**
+     * 群聊房间信息
+     */
+    public static final String ROOM_GROUP_KEY = "roomGroup:roomGroupId_%d";
+
+    /**
      * 获取key
      *
      * @param key 带有模板字符串的key

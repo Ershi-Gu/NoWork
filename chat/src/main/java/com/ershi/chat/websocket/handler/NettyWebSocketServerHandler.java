@@ -94,6 +94,9 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
             // 心跳
             case HEARTBEAT:
                 break;
+            // 发送消息
+            case MESSAGE:
+                chatWebSocketService.receiveChatMsg(ctx.channel(), wsBaseReq.getData());
         }
     }
 }

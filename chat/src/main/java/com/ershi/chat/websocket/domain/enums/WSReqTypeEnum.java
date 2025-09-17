@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public enum WSReqTypeEnum {
 
     HEARTBEAT(1, "心跳包"),
-    AUTHORIZE(2, "用户身份认证"),
+    MESSAGE(2, "接收客户端发送的消息"),
     ;
 
     /**

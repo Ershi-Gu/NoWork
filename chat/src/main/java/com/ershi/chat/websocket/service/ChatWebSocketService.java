@@ -31,4 +31,12 @@ public interface ChatWebSocketService {
      * @param channel
      */
     void offline(Channel channel);
+
+    /**
+     * 接收客户端发送的聊天消息
+     *
+     * @param channel
+     * @param data
+     */
+    void receiveChatMsg(Channel channel, String data);
 }

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public enum WSRespTypeEnum {
+    ERROR(-1, "错误消息"),
     AUTHORIZE_SUCCESS(1, "用户身份认证成功")
     ;
 

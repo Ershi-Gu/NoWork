@@ -3,13 +3,17 @@ package com.ershi.chat.websocket.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
+import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
 import com.ershi.chat.websocket.domain.dto.WSChannelExtraDTO;
 import com.ershi.chat.websocket.domain.enums.UserActiveTypeEnum;
 import com.ershi.chat.websocket.domain.enums.WSRespTypeEnum;
 import com.ershi.chat.websocket.domain.vo.WSBaseResp;
+import com.ershi.chat.websocket.domain.vo.WSErrorResp;
 import com.ershi.chat.websocket.event.UserOfflineEvent;
 import com.ershi.chat.websocket.service.ChatWebSocketService;
 import com.ershi.chat.websocket.utils.NettyUtil;
+import com.ershi.common.exception.BusinessErrorEnum;
+import com.ershi.common.exception.BusinessException;
 import com.ershi.user.domain.entity.UserEntity;
 import com.ershi.user.domain.vo.UserLoginVO;
 import com.ershi.chat.websocket.event.UserOnlineEvent;
@@ -18,6 +22,7 @@ import com.mybatisflex.core.query.QueryWrapper;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +40,7 @@ import static com.ershi.user.domain.entity.table.UserEntityTableDef.USER_ENTITY;
  * @author Ershi-Gu.
  * @since 2025-09-08
  */
+@Slf4j
 @Service
 public class ChatWebSocketServiceImpl implements ChatWebSocketService {
 
@@ -163,6 +169,26 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
             // 发出用户下线事件
             applicationEventPublisher.publishEvent(new UserOfflineEvent(this, user));
         }
+    }
+
+    @Override
+    public void receiveChatMsg(Channel channel, String data) {
+        // 转换消息dto
+        try {
+            ChatMsgReq chatMsgReq = JSON.parseObject(data, ChatMsgReq.class);
+        } catch (Exception e) {
+            throw new BusinessException(BusinessErrorEnum.MSG_FORMAT_ERROR);
+        }
+
+        // 判断用户是否合法登录
+        String token = NettyUtil.getAttr(channel, NettyUtil.TOKEN);
+        if (token.isEmpty()) {
+            // 构建ws错误返回
+            WSErrorResp wsErrorResp = WSErrorResp.build(BusinessErrorEnum.USER_NOT_LOGIN_ERROR.getErrorMsg());
+            sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.ERROR.getType(), wsErrorResp));
+        }
+
+        // todo 调用chat服务持久化数据并发送消息
     }
 
     /**

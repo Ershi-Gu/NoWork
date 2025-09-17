@@ -4,6 +4,9 @@ import cn.hutool.core.util.ObjectUtil;
 import com.ershi.common.exception.BusinessErrorEnum;
 import com.ershi.common.exception.BusinessException;
 import com.ershi.common.exception.ErrorEnum;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
@@ -16,6 +19,28 @@ import java.util.*;
  * @date 2024/12/05
  */
 public class AssertUtil {
+
+    private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+    /**
+     * 注解验证参数(全部校验,抛出异常)
+     *
+     * @param obj
+     */
+    public static <T> void allCheckValidateThrow(T obj) {
+        Set<ConstraintViolation<T>> constraintViolations = validator.validate(obj);
+        if (!constraintViolations.isEmpty()) {
+            StringBuilder errorMsg = new StringBuilder();
+            Iterator<ConstraintViolation<T>> iterator = constraintViolations.iterator();
+            while (iterator.hasNext()) {
+                ConstraintViolation<T> violation = iterator.next();
+                //拼接异常信息
+                errorMsg.append(violation.getPropertyPath().toString()).append(":").append(violation.getMessage()).append(",");
+            }
+            //去掉最后一个逗号
+            throwException(BusinessErrorEnum.API_PARAM_ERROR, errorMsg.substring(0, errorMsg.length() - 1));
+        }
+    }
 
     public static void isTrue(boolean expression, String msg) {
         if (!expression) {

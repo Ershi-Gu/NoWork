@@ -13,6 +13,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+/**
+ *
+ * @author Ershi-Gu.
+ * @since 2025-09-17
+ */
 @Configuration
 public class CaptchaConfig {
 

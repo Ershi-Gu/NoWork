@@ -143,3 +143,39 @@ create table if not exists group_member
 ) engine = InnoDB
   character set utf8mb4
   collate utf8mb4_unicode_ci comment '群成员表';
+
+-- 消息表
+create table if not exists message
+(
+    id          bigint(20)                         not null auto_increment primary key comment '消息id',
+    room_id     bigint(20)                         not null comment '房间id',
+    sender_id   bigint(20)                         not null comment '发送者id',
+    type        int                                not null comment '消息类型',
+    extra       JSON                               not null comment '消息内容-支持多类型消息',
+    create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    is_delete   tinyint  default 0                 not null comment '是否删除：0-否，1-是',
+    index idx_room_id_create_time (room_id, create_time),
+    index idx_room_id_id (room_id, id),
+    index idx_sender_id_create_time (sender_id, create_time)
+) engine = InnoDB
+  character set utf8mb4
+  collate utf8mb4_unicode_ci comment '消息表';
+
+-- 用户收件箱
+create table if not exists user_msg_inbox
+(
+    id          bigint(20)                         not null auto_increment primary key comment '收件箱id',
+    uid         bigint(20)                         not null comment '用户id',
+    room_id     bigint(20)                         not null comment '房间id',
+    read_msg_id bigint(20)                         not null comment '该房间下最后一条已读消息id，用于记录已读到哪一条',
+    read_time   datetime                           not null comment '冗余字段，该房间下阅读到的最后一条消息时间',
+    active_time datetime                           not null comment '冗余字段，该房间最后活跃时间',
+    create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    is_delete   tinyint  default 0                 not null comment '是否删除：0-否，1-是',
+    unique index idx_uid_room_id (uid, room_id),
+    index idx_uid_active_time (uid, active_time)
+) engine = InnoDB
+  character set utf8mb4
+  collate utf8mb4_unicode_ci comment '用户收件箱表';

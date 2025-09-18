@@ -1,8 +1,8 @@
 package com.ershi.chat.domain.message;
 
-import com.ershi.chat.domain.message.type.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mybatisflex.annotation.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,26 +30,32 @@ public class MessageExtra implements Serializable {
      * 撤回消息-也是一条消息
      */
     private RecallMsgDTO recallMsgDTO;
+
     /**
      * 文本消息
      */
     private TextMsgDTO textMsgDTO;
+
     /**
      * 文件消息
      */
     private FileMsgDTO fileMsgDTO;
+
     /**
      * 图片消息
      */
     private ImgMsgDTO imgMsgDTO;
+
     /**
      * 语音消息
      */
     private SoundMsgDTO soundMsgDTO;
+
     /**
      * 文件消息
      */
     private VideoMsgDTO videoMsgDTO;
+
     /**
      * 表情图片信息
      */

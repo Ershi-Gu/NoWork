@@ -2,11 +2,8 @@ package com.ershi.chat.service.handler.message.type;
 
 import com.ershi.chat.constants.MsgOnContactContent;
 import com.ershi.chat.constants.MsgReplyContent;
-import com.ershi.chat.domain.message.MessageEntity;
-import com.ershi.chat.domain.message.BaseMsgDTO;
-import com.ershi.chat.domain.message.MessageExtra;
-import com.ershi.chat.domain.message.enums.MessageTypeEnum;
-import com.ershi.chat.domain.message.type.ImgMsgDTO;
+import com.ershi.chat.domain.message.*;
+import com.ershi.chat.domain.enums.MessageTypeEnum;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.service.handler.message.AbstractMsgHandler;
 import com.ershi.common.exception.BusinessErrorEnum;
@@ -42,11 +39,11 @@ public class ImgMsgHandler extends AbstractMsgHandler<ImgMsgDTO> {
     }
 
     @Override
-    public void saveMsg(MessageEntity msg, ImgMsgDTO imgMsgDTO) {
+    public MessageEntity fillExtra(MessageEntity msg, ImgMsgDTO imgMsgDTO) {
         MessageExtra extra = Optional.ofNullable(msg.getExtra()).orElse(new MessageExtra());
         msg.setExtra(extra);
         extra.setImgMsgDTO(imgMsgDTO);
-        messageMapper.update(msg);
+        return msg;
     }
 
     @Override

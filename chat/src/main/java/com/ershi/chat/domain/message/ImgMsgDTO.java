@@ -1,7 +1,5 @@
-package com.ershi.chat.domain.message.type;
+package com.ershi.chat.domain.message;
 
-import com.ershi.chat.domain.message.BaseFileDTO;
-import com.ershi.chat.domain.message.BaseMsgDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;

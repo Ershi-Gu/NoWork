@@ -2,12 +2,8 @@ package com.ershi.chat.service.handler.message.type;
 
 import com.ershi.chat.constants.MsgOnContactContent;
 import com.ershi.chat.constants.MsgReplyContent;
-import com.ershi.chat.domain.message.BaseMsgDTO;
-import com.ershi.chat.domain.message.MessageEntity;
-import com.ershi.chat.domain.message.MessageExtra;
-import com.ershi.chat.domain.message.enums.MessageTypeEnum;
-import com.ershi.chat.domain.message.type.RecallMsgDTO;
-import com.ershi.chat.domain.message.type.TextMsgDTO;
+import com.ershi.chat.domain.enums.MessageTypeEnum;
+import com.ershi.chat.domain.message.*;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.service.handler.message.AbstractMsgHandler;
 import com.ershi.user.domain.entity.UserEntity;
@@ -42,7 +38,7 @@ public class RecallMsgHandler extends AbstractMsgHandler<TextMsgDTO> {
     protected void checkMsg(TextMsgDTO messageBody, Long roomId, Long uid) {}
 
     @Override
-    protected void saveMsg(MessageEntity message, TextMsgDTO messageBody) {
+    protected MessageEntity fillExtra(MessageEntity message, TextMsgDTO messageBody) {
         throw new UnsupportedOperationException("撤回消息不需要保存");
 
     }

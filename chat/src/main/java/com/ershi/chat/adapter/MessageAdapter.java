@@ -2,8 +2,8 @@ package com.ershi.chat.adapter;
 
 import com.ershi.chat.domain.enums.YesOrNoEnum;
 import com.ershi.chat.domain.message.MessageEntity;
-import com.ershi.chat.domain.message.type.TextMsgDTO;
-import com.ershi.chat.domain.message.vo.TextMsgResp;
+import com.ershi.chat.domain.message.ReplyTextMsgDTO;
+import com.ershi.chat.domain.message.TextMsgDTO;
 import com.ershi.chat.service.handler.message.MsgHandlerFactory;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
 import com.ershi.user.domain.entity.UserEntity;
@@ -24,12 +24,12 @@ public class MessageAdapter {
     public static final int CAN_CALLBACK_GAP_COUNT = 100;
 
     /**
-     * 消息发送请求转换成消息持久化体
+     * 将消息请求转换为基本消息体，不包含具体messageBody（由子类实现具体内容保存）
      *
      * @param chatMsgReq
      * @return {@link MessageEntity }
      */
-    public static MessageEntity buildSaveMsg(ChatMsgReq chatMsgReq) {
+    public static MessageEntity buildBaseMessageEntity(ChatMsgReq chatMsgReq) {
         return MessageEntity.builder()
                 .roomId(chatMsgReq.getRoomId())
                 .senderId(chatMsgReq.getSenderId())
@@ -41,11 +41,11 @@ public class MessageAdapter {
      * 构建回复消息的展示体
      *
      * @param replyMessage
-     * @return {@link TextMsgResp.ReplyMsg }
+     * @return {@link Object }
      */
-    public static TextMsgResp.ReplyMsg buildReplyMessage(TextMsgDTO msg, MessageEntity replyMessage,
-                                                         UserEntity replyUserInfo) {
-        return TextMsgResp.ReplyMsg.builder()
+    public static ReplyTextMsgDTO buildReplyMessage(TextMsgDTO msg, MessageEntity replyMessage,
+                                                    UserEntity replyUserInfo) {
+        return ReplyTextMsgDTO.builder()
                 .id(replyMessage.getId())
                 .uid(replyMessage.getSenderId())
                 .userName(replyUserInfo.getName())

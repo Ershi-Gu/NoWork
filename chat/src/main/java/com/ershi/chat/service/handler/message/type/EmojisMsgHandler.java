@@ -1,11 +1,9 @@
 package com.ershi.chat.service.handler.message.type;
+
 import com.ershi.chat.constants.MsgOnContactContent;
 import com.ershi.chat.constants.MsgReplyContent;
-import com.ershi.chat.domain.message.MessageEntity;
-import com.ershi.chat.domain.message.BaseMsgDTO;
-import com.ershi.chat.domain.message.MessageExtra;
-import com.ershi.chat.domain.message.enums.MessageTypeEnum;
-import com.ershi.chat.domain.message.type.EmojisMsgDTO;
+import com.ershi.chat.domain.enums.MessageTypeEnum;
+import com.ershi.chat.domain.message.*;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.service.handler.message.AbstractMsgHandler;
 import jakarta.annotation.Resource;
@@ -42,11 +40,11 @@ public class EmojisMsgHandler extends AbstractMsgHandler<EmojisMsgDTO> {
      * @param emojisMsgDTO
      */
     @Override
-    public void saveMsg(MessageEntity msg, EmojisMsgDTO emojisMsgDTO) {
+    public MessageEntity fillExtra(MessageEntity msg, EmojisMsgDTO emojisMsgDTO) {
         MessageExtra extra = Optional.ofNullable(msg.getExtra()).orElse(new MessageExtra());
         msg.setExtra(extra);
         extra.setEmojisMsgDTO(emojisMsgDTO);
-        messageMapper.update(msg);
+        return msg;
     }
 
     @Override

@@ -2,12 +2,12 @@ package com.ershi.chat.service.handler.message.type;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.ershi.chat.adapter.MessageAdapter;
+import com.ershi.chat.domain.enums.MessageTypeEnum;
 import com.ershi.chat.domain.message.BaseMsgDTO;
 import com.ershi.chat.domain.message.MessageEntity;
 import com.ershi.chat.domain.message.MessageExtra;
-import com.ershi.chat.domain.message.enums.MessageTypeEnum;
-import com.ershi.chat.domain.message.type.TextMsgDTO;
-import com.ershi.chat.domain.message.vo.TextMsgResp;
+import com.ershi.chat.domain.message.TextMsgDTO;
+import com.ershi.chat.domain.vo.TextMsgResp;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.service.handler.message.AbstractMsgHandler;
 import com.ershi.common.exception.BusinessErrorEnum;
@@ -109,7 +109,7 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgDTO> {
      * @param textMsgDTO
      */
     @Override
-    public void saveMsg(MessageEntity msg, TextMsgDTO textMsgDTO) {
+    public MessageEntity fillExtra(MessageEntity msg, TextMsgDTO textMsgDTO) {
         // 保存消息内容
         MessageExtra extra = Optional.ofNullable(msg.getExtra()).orElse(new MessageExtra());
         msg.setExtra(extra);
@@ -125,8 +125,7 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgDTO> {
             textMsgDTO.setAtUidList(textMsgDTO.getAtUidList().stream().distinct().collect(Collectors.toList()));
         }
         // todo url卡片解析
-        // 更新BD
-        messageMapper.update(msg);
+        return msg;
     }
 
     @Override
@@ -141,13 +140,13 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgDTO> {
         // 设置艾特的uid
         textMsgResp.setAtUidList(textMsgDTO.getAtUidList());
 
-        // 获取回复的消息
+        // 获取被回复的消息
         Optional<MessageEntity> reply = Optional.ofNullable(textMsgDTO.getReplyMsgId())
                 .map(messageMapper::selectOneById);
         if (reply.isEmpty()) {
             return textMsgResp;
         }
-        // 如果回复消息存在，组装回复消息
+        // 如果被回复消息存在，组装被回复消息
         MessageEntity replyMessage = reply.get();
         UserEntity replyUserInfo = userInfoCache.get(replyMessage.getSenderId());
         textMsgResp.setReply(MessageAdapter.buildReplyMessage(textMsgDTO, replyMessage, replyUserInfo));

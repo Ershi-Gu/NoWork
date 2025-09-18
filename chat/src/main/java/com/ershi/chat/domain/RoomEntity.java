@@ -1,5 +1,7 @@
 package com.ershi.chat.domain;
 
+import com.ershi.chat.domain.enums.RoomTypeEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
@@ -67,4 +69,13 @@ public class RoomEntity {
      */
     @Column(value = "is_delete")
     private Integer isDelete;
+
+    /**
+     * 判断是否是单聊
+     * @return boolean
+     */
+    @JsonIgnore
+    public boolean isRoomFriend() {
+        return RoomTypeEnum.of(this.type) == RoomTypeEnum.FRIEND;
+    }
 }

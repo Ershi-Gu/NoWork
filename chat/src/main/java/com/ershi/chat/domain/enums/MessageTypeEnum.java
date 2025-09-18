@@ -1,4 +1,4 @@
-package com.ershi.chat.domain.message.enums;
+package com.ershi.chat.domain.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

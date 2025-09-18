@@ -2,11 +2,8 @@ package com.ershi.chat.service.handler.message.type;
 
 import com.ershi.chat.constants.MsgOnContactContent;
 import com.ershi.chat.constants.MsgReplyContent;
-import com.ershi.chat.domain.message.MessageEntity;
-import com.ershi.chat.domain.message.BaseMsgDTO;
-import com.ershi.chat.domain.message.MessageExtra;
-import com.ershi.chat.domain.message.enums.MessageTypeEnum;
-import com.ershi.chat.domain.message.type.FileMsgDTO;
+import com.ershi.chat.domain.enums.MessageTypeEnum;
+import com.ershi.chat.domain.message.*;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.service.handler.message.AbstractMsgHandler;
 import com.ershi.common.exception.BusinessErrorEnum;
@@ -55,11 +52,11 @@ public class FileMsgHandler extends AbstractMsgHandler<FileMsgDTO> {
      * @param fileMsgDTO
      */
     @Override
-    public void saveMsg(MessageEntity msg, FileMsgDTO fileMsgDTO) {
+    public MessageEntity fillExtra(MessageEntity msg, FileMsgDTO fileMsgDTO) {
         MessageExtra extra = Optional.ofNullable(msg.getExtra()).orElse(new MessageExtra());
         msg.setExtra(extra);
         extra.setFileMsgDTO(fileMsgDTO);
-        messageDao.update(msg);
+        return msg;
     }
 
     @Override

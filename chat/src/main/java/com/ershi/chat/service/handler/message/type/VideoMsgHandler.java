@@ -2,11 +2,8 @@ package com.ershi.chat.service.handler.message.type;
 
 import com.ershi.chat.constants.MsgOnContactContent;
 import com.ershi.chat.constants.MsgReplyContent;
-import com.ershi.chat.domain.message.BaseMsgDTO;
-import com.ershi.chat.domain.message.MessageEntity;
-import com.ershi.chat.domain.message.MessageExtra;
-import com.ershi.chat.domain.message.enums.MessageTypeEnum;
-import com.ershi.chat.domain.message.type.VideoMsgDTO;
+import com.ershi.chat.domain.enums.MessageTypeEnum;
+import com.ershi.chat.domain.message.*;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.service.handler.message.AbstractMsgHandler;
 import jakarta.annotation.Resource;
@@ -37,11 +34,11 @@ public class VideoMsgHandler extends AbstractMsgHandler<VideoMsgDTO> {
     }
 
     @Override
-    public void saveMsg(MessageEntity msg, VideoMsgDTO videoMsgDTO) {
+    public MessageEntity fillExtra(MessageEntity msg, VideoMsgDTO videoMsgDTO) {
         MessageExtra extra = Optional.ofNullable(msg.getExtra()).orElse(new MessageExtra());
         msg.setExtra(extra);
         extra.setVideoMsgDTO(videoMsgDTO);
-        messageMapper.update(msg);
+        return msg;
     }
 
     @Override

@@ -8,10 +8,13 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 线程池配置
+ *
  * @author Ershi
  * @date 2024/11/29
  */
@@ -27,9 +30,14 @@ public class ThreadPoolConfig implements AsyncConfigurer {
      * websocket通信线程池
      */
     public static final String WS_EXECUTOR = "websocketExecutor";
+    /**
+     * websocket虚拟线程Executor
+     */
+    public static final String WS_VIRTUAL_EXECUTOR = "wsVirtualExecutor";
 
     /**
      * 指定@Async使用的线程池
+     *
      * @return {@link Executor}
      */
     @Override
@@ -39,6 +47,7 @@ public class ThreadPoolConfig implements AsyncConfigurer {
 
     /**
      * 自定义项目通用线程池
+     *
      * @return {@link ThreadPoolTaskExecutor}
      */
     @Bean(NO_WORK_EXECUTOR)
@@ -61,6 +70,7 @@ public class ThreadPoolConfig implements AsyncConfigurer {
 
     /**
      * websocket通信共用线程池
+     *
      * @return {@link ThreadPoolTaskExecutor}
      */
     @Bean(WS_EXECUTOR)
@@ -70,11 +80,27 @@ public class ThreadPoolConfig implements AsyncConfigurer {
         executor.setMaxPoolSize(16);
         //支持同时推送1000人
         executor.setQueueCapacity(1000);
-        executor.setThreadNamePrefix("websocket-executor-");
+        executor.setThreadNamePrefix("ws-executor-");
         //满了直接丢弃，默认为不重要消息推送
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
         executor.setThreadFactory(new MyThreadFactory(executor));
         executor.initialize();
         return executor;
+    }
+
+    /**
+     * websocket通信虚拟线程池，该线程池并不作池化，由于虚拟线程属于非常轻量级的资源，因此，用时创建，用完就扔，不要池化虚拟线程。
+     *
+     * @return {@link Executor}
+     */
+    @Bean(WS_VIRTUAL_EXECUTOR)
+    public Executor websocketVirtualExecutor() {
+        // 虚拟线程的基础线程工厂
+        ThreadFactory virtualFactory = Thread.ofVirtual()
+                .name("ws-virtual-", 0)
+                .factory();
+        // 自定义线程工厂包装基础工厂，实现线程内的异常处理
+        ThreadFactory myFactory = new MyThreadFactory(virtualFactory);
+        return Executors.newThreadPerTaskExecutor(myFactory);
     }
 }

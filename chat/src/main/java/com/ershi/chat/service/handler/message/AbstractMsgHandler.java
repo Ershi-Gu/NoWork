@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ershi.chat.adapter.MessageAdapter;
 import com.ershi.chat.domain.message.BaseMsgDTO;
 import com.ershi.chat.domain.message.MessageEntity;
-import com.ershi.chat.domain.message.enums.MessageTypeEnum;
+import com.ershi.chat.domain.enums.MessageTypeEnum;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
 import com.ershi.common.utils.AssertUtil;
@@ -66,13 +66,13 @@ public abstract class AbstractMsgHandler<Req> {
      * @param message
      * @param messageBody
      */
-    protected abstract void saveMsg(MessageEntity message, Req messageBody);
+    protected abstract MessageEntity fillExtra(MessageEntity message, Req messageBody);
 
     /**
      * 聊天内展示消息
      *
      * @param msg
-     * @return {@link Object }
+     * @return {@link java.lang.Object }
      */
     public abstract BaseMsgDTO showMsg(MessageEntity msg);
 
@@ -92,14 +92,12 @@ public abstract class AbstractMsgHandler<Req> {
     public abstract String showMsgOnContact(MessageEntity message);
 
     /**
-     * 检查消息合法性，并持久化消息到服务器
+     * 检查消息请求合法性，并转换为消息持久体
      *
      * @param chatMsgReq 发送来的消息体
-     * @param uid        发送者uid
      * @return {@link Long } 消息持久化后的msgId
      */
-    @Transactional(rollbackFor = Exception.class)
-    public Long checkAndSaveMsg(ChatMsgReq chatMsgReq) {
+    public MessageEntity checkAndBuildEntity(ChatMsgReq chatMsgReq) {
         // 获取消息体的实际类型
         Req messageBody = this.toBean(chatMsgReq.getMessageBody());
 
@@ -109,14 +107,23 @@ public abstract class AbstractMsgHandler<Req> {
         // 子类扩展校验规则
         checkMsg(messageBody, chatMsgReq.getRoomId(), chatMsgReq.getSenderId());
 
-        // 消息基本信息保存
-        MessageEntity insert = MessageAdapter.buildSaveMsg(chatMsgReq);
-        messageMapper.insertSelective(insert);
+        // 基础消息体转换
+        MessageEntity baseMessageEntity = MessageAdapter.buildBaseMessageEntity(chatMsgReq);
 
         // 子类根据不同的消息类型保存extra扩展信息
-        saveMsg(insert, messageBody);
+        return fillExtra(baseMessageEntity, messageBody);
+    }
 
-        return insert.getId();
+    /**
+     * 异步持久化消息数据，该方法由本地事务表保证可靠性，并在内部进行异步调用
+     *
+     * @param message
+     * @return {@link Long } 持久化消息主键
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Long saveMessage(MessageEntity messageEntity) {
+        messageMapper.insertSelective(messageEntity);
+        return messageEntity.getId();
     }
 
     /**

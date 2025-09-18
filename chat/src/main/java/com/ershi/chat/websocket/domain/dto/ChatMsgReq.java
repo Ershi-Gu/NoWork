@@ -19,6 +19,11 @@ import lombok.NoArgsConstructor;
 public class ChatMsgReq {
 
     /**
+     * 客户端消息确认唯一ackId
+     */
+    private String clientMsgId;
+
+    /**
      * 发送目标房间id
      */
     private Long roomId;
@@ -36,6 +41,6 @@ public class ChatMsgReq {
     /**
      * 消息内容
      */
-    private String messageBody;
+    private Object messageBody;
 
 }

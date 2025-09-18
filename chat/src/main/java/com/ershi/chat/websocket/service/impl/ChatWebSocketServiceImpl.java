@@ -3,10 +3,12 @@ package com.ershi.chat.websocket.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
+import com.ershi.chat.service.IMessageService;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
 import com.ershi.chat.websocket.domain.dto.WSChannelExtraDTO;
 import com.ershi.chat.websocket.domain.enums.UserActiveTypeEnum;
 import com.ershi.chat.websocket.domain.enums.WSRespTypeEnum;
+import com.ershi.chat.websocket.domain.vo.CMReceiveAckResp;
 import com.ershi.chat.websocket.domain.vo.WSBaseResp;
 import com.ershi.chat.websocket.domain.vo.WSErrorResp;
 import com.ershi.chat.websocket.event.UserOfflineEvent;
@@ -31,6 +33,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executor;
 
 import static com.ershi.user.domain.entity.table.UserEntityTableDef.USER_ENTITY;
 
@@ -46,6 +49,12 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private IMessageService messageService;
+
+    @Resource
+    private Executor websocketVirtualExecutor;
 
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
@@ -153,9 +162,10 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
                 channels.removeIf(ch -> Objects.equals(ch, channel));
             }
             // 若uid还有其他对应连接，则说明还有端在线，不在下线范围内
-            if(!CollectionUtil.isEmpty(ONLINE_USER_CHANNELS_MAP.get(uidOptional.get()))) {
+            if (!CollectionUtil.isEmpty(ONLINE_USER_CHANNELS_MAP.get(uidOptional.get()))) {
                 offlineAll = false;
-            };
+            }
+            ;
         }
 
         // 若全下线则发出用户下线事件
@@ -174,8 +184,9 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
     @Override
     public void receiveChatMsg(Channel channel, String data) {
         // 转换消息dto
+        ChatMsgReq chatMsgReq;
         try {
-            ChatMsgReq chatMsgReq = JSON.parseObject(data, ChatMsgReq.class);
+            chatMsgReq = JSON.parseObject(data, ChatMsgReq.class);
         } catch (Exception e) {
             throw new BusinessException(BusinessErrorEnum.MSG_FORMAT_ERROR);
         }
@@ -186,9 +197,17 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
             // 构建ws错误返回
             WSErrorResp wsErrorResp = WSErrorResp.build(BusinessErrorEnum.USER_NOT_LOGIN_ERROR.getErrorMsg());
             sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.ERROR.getType(), wsErrorResp));
+            return;
         }
 
-        // todo 调用chat服务持久化数据并发送消息
+        // 虚拟线程异步处理
+        websocketVirtualExecutor.execute(() -> {
+            // 调用chat服务持久化数据并发送消息
+            messageService.sendMultiTypeMessage(chatMsgReq);
+            // 回复客户端ack -> 消息已接收
+            sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.RECEIVE_ACK.getType(),
+                    CMReceiveAckResp.build(chatMsgReq.getClientMsgId())));
+        });
     }
 
     /**

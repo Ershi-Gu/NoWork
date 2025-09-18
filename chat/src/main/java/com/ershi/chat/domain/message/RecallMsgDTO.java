@@ -1,6 +1,5 @@
-package com.ershi.chat.domain.message.type;
+package com.ershi.chat.domain.message;
 
-import com.ershi.chat.domain.message.BaseMsgDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

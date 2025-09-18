@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 @Getter
 public enum WSRespTypeEnum {
     ERROR(-1, "错误消息"),
-    AUTHORIZE_SUCCESS(1, "用户身份认证成功")
+    AUTHORIZE_SUCCESS(1, "用户身份认证成功"),
+    RECEIVE_ACK(2, "接收消息确认"),
     ;
 
     /**

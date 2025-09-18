@@ -1,73 +1,80 @@
 package com.ershi.common.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.*;
 
 import java.util.List;
 
 /**
- * Json工具类
- * @author Ershi
- * @date 2024/11/29
+ * 基于fastjson2的json工具类
+ *
+ * @author Ershi-Gu.
+ * @since 2025-09-18
  */
 public class JsonUtils {
-    
-    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
     /**
-     * @param str
-     * @param clz
-     * @return {@link T}
+     * 字符串转对象
      */
     public static <T> T toObj(String str, Class<T> clz) {
         try {
-            return JSON_MAPPER.readValue(str, clz);
-        } catch (JsonProcessingException e) {
+            return JSON.parseObject(str, clz);
+        } catch (JSONException e) {
             throw new UnsupportedOperationException(e);
         }
     }
 
-    public static <T> T toObj(String str, TypeReference<T> clz) {
+    /**
+     * 字符串转对象（支持泛型）
+     */
+    public static <T> T toObj(String str, TypeReference<T> typeReference) {
         try {
-            return JSON_MAPPER.readValue(str, clz);
-        } catch (JsonProcessingException e) {
+            return JSON.parseObject(str, typeReference);
+        } catch (JSONException e) {
             throw new UnsupportedOperationException(e);
         }
     }
 
+    /**
+     * 字符串转 List
+     */
     public static <T> List<T> toList(String str, Class<T> clz) {
         try {
-            return JSON_MAPPER.readValue(str, new TypeReference<List<T>>() {
-            });
-        } catch (JsonProcessingException e) {
+            return JSON.parseArray(str, clz);
+        } catch (JSONException e) {
             throw new UnsupportedOperationException(e);
         }
     }
 
-    public static JsonNode toJsonNode(String str) {
+    /**
+     * 字符串转 JSONObject
+     */
+    public static JSONObject toJSONObject(String str) {
         try {
-            return JSON_MAPPER.readTree(str);
-        } catch (JsonProcessingException e) {
+            return JSON.parseObject(str, JSONObject.class);
+        } catch (JSONException e) {
             throw new UnsupportedOperationException(e);
         }
     }
 
-    public static <T> T nodeToValue(JsonNode node, Class<T> clz) {
+    /**
+     * JSONObject 转对象
+     */
+    public static <T> T nodeToValue(JSONObject node, Class<T> clz) {
         try {
-            return JSON_MAPPER.treeToValue(node, clz);
-        } catch (JsonProcessingException e) {
+            return JSON.to(clz, node);
+        } catch (JSONException e) {
             throw new UnsupportedOperationException(e);
         }
     }
 
+    /**
+     * 对象转字符串
+     */
     public static String toStr(Object t) {
         try {
-            return JSON_MAPPER.writeValueAsString(t);
+            return JSON.toJSONString(t);
         } catch (Exception e) {
             throw new UnsupportedOperationException(e);
         }
     }
-
 }

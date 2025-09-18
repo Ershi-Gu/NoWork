@@ -8,6 +8,7 @@ import com.ershi.chat.domain.enums.MessageTypeEnum;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
 import com.ershi.common.utils.AssertUtil;
+import com.ershi.transaction.annotation.SecureInvoke;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
@@ -117,10 +118,11 @@ public abstract class AbstractMsgHandler<Req> {
     /**
      * 异步持久化消息数据，该方法由本地事务表保证可靠性，并在内部进行异步调用
      *
-     * @param message
+     * @param messageEntity
      * @return {@link Long } 持久化消息主键
      */
     @Transactional(rollbackFor = Exception.class)
+    @SecureInvoke(maxRetryTimes = 5, async = true)
     public Long saveMessage(MessageEntity messageEntity) {
         messageMapper.insertSelective(messageEntity);
         return messageEntity.getId();

@@ -179,3 +179,23 @@ create table if not exists user_msg_inbox
 ) engine = InnoDB
   character set utf8mb4
   collate utf8mb4_unicode_ci comment '用户收件箱表';
+
+-- 本地消息表-分布式事务
+create table if not exists secure_invoke_record
+(
+    id                 bigint(20) unsigned not null auto_increment comment 'id',
+    secure_invoke_json json                not null comment '请求快照参数json',
+    status             tinyint             not null comment '状态 1待执行 2已失败',
+    next_retry_time    datetime            not null comment '下一次重试的时间',
+    retry_times        int                 not null comment '已经重试的次数',
+    max_retry_times    int                 not null comment '最大重试次数',
+    fail_reason        text comment '执行失败的堆栈',
+    create_time        datetime            not null default current_timestamp comment '创建时间',
+    update_time        datetime            not null default current_timestamp on update current_timestamp comment '修改时间',
+    is_delete          tinyint                      default 0 not null comment '是否删除：0-否，1-是',
+    primary key (id) using btree,
+    index idx_status_next_retry_time (status, next_retry_time),
+    index idx_status_next_retry_create (status, next_retry_time, create_time)
+) engine = InnoDB
+  character set utf8mb4
+  collate utf8mb4_unicode_ci comment '本地消息表';

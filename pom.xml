@@ -72,6 +72,7 @@
         <mail.version>3.5.5</mail.version>
         <spring-security-crypto.version>6.5.3</spring-security-crypto.version>
         <captcha.version>1.4.0</captcha.version>
+        <rocketmq.version>2.3.1</rocketmq.version>
     </properties>
 
     <dependencyManagement>
@@ -140,6 +141,13 @@
                 <artifactId>mybatis-flex-processor</artifactId>
                 <version>${mybatis-flex.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <!-- MQ -->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.version}</version>
             </dependency>
 
             <!-- websocket -->

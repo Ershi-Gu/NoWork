@@ -65,6 +65,12 @@
             <artifactId>mybatis-flex-processor</artifactId>
         </dependency>
 
+        <!-- MQ -->
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-spring-boot-starter</artifactId>
+        </dependency>
+
         <!-- common-util -->
         <dependency>
             <groupId>cn.dev33</groupId>

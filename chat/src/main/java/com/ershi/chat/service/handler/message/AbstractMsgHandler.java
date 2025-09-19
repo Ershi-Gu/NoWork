@@ -11,8 +11,10 @@ import com.ershi.common.utils.AssertUtil;
 import com.ershi.transaction.annotation.SecureInvoke;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.lang.reflect.ParameterizedType;
 
@@ -113,19 +115,6 @@ public abstract class AbstractMsgHandler<Req> {
 
         // 子类根据不同的消息类型保存extra扩展信息
         return fillExtra(baseMessageEntity, messageBody);
-    }
-
-    /**
-     * 异步持久化消息数据，该方法由本地事务表保证可靠性，并在内部进行异步调用
-     *
-     * @param messageEntity
-     * @return {@link Long } 持久化消息主键
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @SecureInvoke(maxRetryTimes = 5, async = true)
-    public Long saveMessage(MessageEntity messageEntity) {
-        messageMapper.insertSelective(messageEntity);
-        return messageEntity.getId();
     }
 
     /**

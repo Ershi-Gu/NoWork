@@ -6,13 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 该注解启用本地事务保证方法成功执行。如果在事务内的方法，会将操作记录入库，保证执行。
+ * 该注解启用本地事务保证方法成功执行。如果在事务内的方法，会将操作记录入库，通过重试保证执行。
  *
  * @author Ershi
  * @date 2025/02/06
  */
-@Retention(RetentionPolicy.RUNTIME)//运行时生效
-@Target(ElementType.METHOD)//作用在方法上
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 public @interface SecureInvoke {
 
     /**

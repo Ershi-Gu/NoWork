@@ -3,7 +3,8 @@
 # 启动 NameServer 并把日志输出到 ~/namesrv.log
 nohup sh mqnamesrv > ~/namesrv.log 2>&1 &
 # 启动 Broker 并把日志输出到 ~/broker.log
-nohup sh mqbroker -n localhost:9876 -c ../conf/broker.conf > ~/broker.log 2>&1 &
+export JAVA_OPTS="-Drocketmq.broker.ip=ip"
+nohup sh mqbroker -n ip:9876 -c ../conf/broker.conf > ~/broker.log 2>&1 &
 
 # 验证进程是否启动成功
 ps -ef | grep NamesrvStartup

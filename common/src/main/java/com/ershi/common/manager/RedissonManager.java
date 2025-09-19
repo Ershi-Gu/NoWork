@@ -1,8 +1,6 @@
 package com.ershi.common.manager;
 
 import com.ershi.common.constants.RedisKey;
-import com.ershi.common.exception.BusinessErrorEnum;
-import com.ershi.common.exception.BusinessException;
 import com.ershi.common.exception.SystemCommonErrorEnum;
 import com.ershi.common.utils.AssertUtil;
 import com.ershi.common.utils.RequestHolder;

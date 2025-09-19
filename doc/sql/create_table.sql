@@ -186,7 +186,7 @@ create table if not exists secure_invoke_record
     id                 bigint(20) unsigned not null auto_increment comment 'id',
     secure_invoke_json json                not null comment '请求快照参数json',
     status             tinyint             not null comment '状态 1待执行 2已失败',
-    next_retry_time    datetime            not null comment '下一次重试的时间',
+    next_retry_time    datetime            null comment '下一次重试的时间',
     retry_times        int                 not null comment '已经重试的次数',
     max_retry_times    int                 not null comment '最大重试次数',
     fail_reason        text comment '执行失败的堆栈',

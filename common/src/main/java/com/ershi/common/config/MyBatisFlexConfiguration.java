@@ -3,6 +3,7 @@ package com.ershi.common.config;
 import com.mybatisflex.core.audit.AuditManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -19,10 +20,10 @@ public class MyBatisFlexConfiguration {
 
 
     public MyBatisFlexConfiguration() {
-        //开启审计功能
+        // todo 生产环境请关闭，开启sql审计功能
         AuditManager.setAuditEnable(true);
 
-        //设置 SQL 审计收集器
+        // 设置 SQL 审计收集器
         AuditManager.setMessageCollector(auditMessage ->
                 logger.info("{},{}ms", auditMessage.getFullSql()
                         , auditMessage.getElapsedTime())

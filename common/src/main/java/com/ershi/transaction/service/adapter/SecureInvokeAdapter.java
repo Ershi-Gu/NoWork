@@ -40,6 +40,8 @@ public class SecureInvokeAdapter {
                 .build();
         return SecureInvokeRecordEntity.builder()
                 .secureInvokeJson(dto)
+                .status(SecureInvokeRecordEntity.STATUS_WAIT)
+                .retryTimes(0)
                 .maxRetryTimes(secureInvoke.maxRetryTimes())
                 .nextRetryTime(LocalDateTime.now().plusMinutes((long) SecureInvokeService.RETRY_INTERVAL_MINUTES))
                 .build();

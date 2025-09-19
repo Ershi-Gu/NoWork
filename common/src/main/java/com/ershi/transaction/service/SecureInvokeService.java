@@ -126,7 +126,7 @@ public class SecureInvokeService {
             // 执行成功更新本地事务表
             removeRecord(record.getId());
         } catch (Throwable e) {
-            log.error("SecureInvokeService invoke fail", e);
+            log.error("SecureInvokeService invoke fail: ", e);
             // 执行失败，等待下次重试执行
             scheduleNextRetry(record, e.getMessage());
         } finally {

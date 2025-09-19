@@ -20,6 +20,12 @@ import org.springframework.lang.Nullable;
 
 import java.util.concurrent.Executor;
 
+/**
+ * 本地事务线程池配置接口，通过实现该接口的方法提供线程池配置
+ *
+ * @author Ershi-Gu.
+ * @since 2025-09-19
+ */
 public interface SecureInvokeConfigurer {
 
     /**

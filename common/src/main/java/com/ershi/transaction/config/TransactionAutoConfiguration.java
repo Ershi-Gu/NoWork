@@ -53,7 +53,8 @@ public class TransactionAutoConfiguration {
             }
             return candidates.getFirst();
         });
-        executor = Optional.ofNullable(configurer.get()).map(SecureInvokeConfigurer::getSecureInvokeExecutor).orElse(ForkJoinPool.commonPool());
+        executor = Optional.ofNullable(configurer.get()).
+                map(SecureInvokeConfigurer::getSecureInvokeExecutor).orElse(ForkJoinPool.commonPool());
     }
 
     @Bean

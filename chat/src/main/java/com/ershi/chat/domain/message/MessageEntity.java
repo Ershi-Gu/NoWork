@@ -1,5 +1,6 @@
 package com.ershi.chat.domain.message;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
@@ -61,6 +62,7 @@ public class MessageEntity {
      * 创建时间
      */
     @Column(value = "create_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     /**

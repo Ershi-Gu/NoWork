@@ -1,5 +1,6 @@
 package com.ershi.chat.domain;
 
+import com.ershi.chat.domain.enums.RoomHotFlagEnum;
 import com.ershi.chat.domain.enums.RoomTypeEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mybatisflex.annotation.Column;
@@ -77,5 +78,23 @@ public class RoomEntity {
     @JsonIgnore
     public boolean isRoomFriend() {
         return RoomTypeEnum.of(this.type) == RoomTypeEnum.FRIEND;
+    }
+
+    /**
+     * 判断是否是热点会话
+     *
+     * @return boolean
+     */
+    public boolean isHotRoom() {
+        return RoomHotFlagEnum.of(this.hotFlag) == RoomHotFlagEnum.HOT;
+    }
+
+    /**
+     * 判断是否是全员群
+     *
+     * @return boolean
+     */
+    public boolean isAllRoom() {
+        return RoomTypeEnum.of(this.type) == RoomTypeEnum.ALL;
     }
 }

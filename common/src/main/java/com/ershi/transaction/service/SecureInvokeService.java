@@ -55,7 +55,7 @@ public class SecureInvokeService {
     /**
      * 重试方法，每5秒查询一次本地事务表，并进行异步重试
      */
-    @Scheduled(cron = "*/5 * * * * ?")
+//    @Scheduled(cron = "*/5 * * * * ?")
     public void retry() {
         List<SecureInvokeRecordEntity> secureInvokeRecords = secureInvokeRecordDao.getWaitRetryRecords();
         for (SecureInvokeRecordEntity secureInvokeRecord : secureInvokeRecords) {

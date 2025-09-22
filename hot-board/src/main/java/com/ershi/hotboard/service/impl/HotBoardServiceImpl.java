@@ -1,6 +1,8 @@
 package com.ershi.hotboard.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.ershi.common.constants.RedisKey;
+import com.ershi.common.utils.JsonUtils;
 import com.ershi.common.utils.RedisUtils;
 import com.ershi.hotboard.domain.dto.HotBoardDataDTO;
 import com.ershi.hotboard.domain.vo.HotBoardVO;
@@ -12,6 +14,7 @@ import com.ershi.hotboard.mapper.HotBoardMapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.ershi.hotboard.domain.entity.table.HotBoardEntityTableDef.HOT_BOARD_ENTITY;
@@ -35,15 +38,17 @@ public class HotBoardServiceImpl extends ServiceImpl<HotBoardMapper, HotBoardEnt
         String key = RedisKey.getKey(RedisKey.HOT_BOARD_LIST_KEY);
 
         // 尝试获取缓存
-        List<HotBoardVO> cacheList = RedisUtils.get(key, List.class);
-        if (cacheList != null && !cacheList.isEmpty()) {
-            return cacheList;
+        Set<String> cacheSet = RedisUtils.sGet(key);
+        if (cacheSet != null && !cacheSet.isEmpty()) {
+            return cacheSet.stream()
+                    .map(json -> JSON.parseObject(json, HotBoardVO.class))
+                    .collect(Collectors.toList());
         }
 
         // 无缓存则进行旁路缓存更新
         List<HotBoardVO> voList = this.list(QueryWrapper.create().orderBy(HOT_BOARD_ENTITY.SORT, true))
                 .stream().map(HotBoardVO::objToVO).toList();
-        RedisUtils.set(key, voList, HOT_BOARD_LIST_EXPIRE_TIME);
+        RedisUtils.sSet(key, voList.toArray());
 
         return voList;
     }

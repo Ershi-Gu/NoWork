@@ -58,7 +58,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
 
     @Transactional
     @Override
-    public void sendMultiTypeMessage(ChatMsgReq chatMsgReq) {
+    public Long sendMultiTypeMessage(ChatMsgReq chatMsgReq) {
         // check发送权限
         check(chatMsgReq);
 
@@ -67,11 +67,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
         MessageEntity messageEntity = msgHandler.checkAndBuildEntity(chatMsgReq);
 
         // 异步持久化消息数据，该方法由本地事务表保证可靠性，并在内部进行异步调用
-        SpringUtil.getBean(MessageServiceImpl.class).saveMessage(messageEntity);
+        Long msgId = SpringUtil.getBean(MessageServiceImpl.class).saveMessage(messageEntity);
 
-        // todo 获取mq-msg唯一id
         // 发送可靠消息到mq，该方法由本地事务表保证可靠性，并在内部进行异步调用
-        mqProducer.sendSecureMsg(MQConstant.MSG_TOPIC, messageEntity, chatMsgReq.getClientMsgId());
+        mqProducer.sendSecureMsg(MQConstant.MSG_TOPIC, messageEntity, msgId);
+
+        return msgId;
     }
 
     /**
@@ -107,12 +108,12 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
     }
 
     /**
-     * 异步持久化消息数据，该方法由本地事务表保证可靠性，并在内部进行异步调用。（需要调用该方法者本身存在事务中）
+     * 同步持久化消息数据，该方法由本地事务表保证落库可靠性。
      *
      * @param messageEntity
      * @return {@link Long } 持久化消息主键
      */
-    @SecureInvoke(maxRetryTimes = 5, async = true)
+    @SecureInvoke(maxRetryTimes = 5, async = false)
     @Override
     public Long saveMessage(MessageEntity messageEntity) {
         this.save(messageEntity);

@@ -203,10 +203,10 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         // 虚拟线程异步处理
         websocketVirtualExecutor.execute(() -> {
             // 调用chat服务持久化数据并发送消息
-            messageService.sendMultiTypeMessage(chatMsgReq);
+            Long msgId = messageService.sendMultiTypeMessage(chatMsgReq);
             // 回复客户端ack -> 消息已接收
             sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.RECEIVE_ACK.getType(),
-                    CMReceiveAckResp.build(chatMsgReq.getClientMsgId())));
+                    CMReceiveAckResp.build(msgId)));
         });
     }
 

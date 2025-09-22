@@ -17,8 +17,9 @@ public interface IMessageService extends IService<MessageEntity> {
      * 持久化消息并通过ws发送
      *
      * @param chatMsgReq
+     * @return {@link Long } 持久化消息id
      */
-    void sendMultiTypeMessage(ChatMsgReq chatMsgReq);
+    Long sendMultiTypeMessage(ChatMsgReq chatMsgReq);
 
     /**
      * 异步持久化消息数据，该方法由本地事务表保证可靠性，并在内部进行异步调用

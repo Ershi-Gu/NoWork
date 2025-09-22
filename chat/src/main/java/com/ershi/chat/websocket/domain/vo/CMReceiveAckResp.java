@@ -14,11 +14,11 @@ public class CMReceiveAckResp {
     /**
      * 客户端消息确认唯一ackId
      */
-    private String clientMsgId;
+    private Long clientMsgId;
 
-    public static CMReceiveAckResp build(String clientMsgId) {
+    public static CMReceiveAckResp build(Long msgId) {
         CMReceiveAckResp ackResp = new CMReceiveAckResp();
-        ackResp.setClientMsgId(clientMsgId);
+        ackResp.setClientMsgId(msgId);
         return ackResp;
     }
 }

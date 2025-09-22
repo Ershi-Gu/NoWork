@@ -59,6 +59,11 @@ public class RedisKey {
     public static final String ROOM_KEY = "roomInfo:roomId_%d";
 
     /**
+     * 群成员信息
+     */
+    public static final String ROOM_MEMBERS_KEY = "room:members_%d";
+
+    /**
      * 单聊房间缓存信息
      */
     public static final String ROOM_FRIEND_KEY = "roomFriend:roomFriendId_%d";
@@ -67,6 +72,16 @@ public class RedisKey {
      * 群聊房间信息
      */
     public static final String ROOM_GROUP_KEY = "roomGroup:roomGroupId_%d";
+
+    /**
+     * 热点会话活跃时间
+     */
+    public static final String HOT_ROOM_ACTIVE_TIME_KEY = "hotRoomActiveTime";
+
+    /**
+     * 全局唯一自增消息id
+     */
+    public static final String MSG_ID_KEY = "msgId";
 
     /**
      * 获取key

@@ -17,7 +17,9 @@ import com.ershi.chat.service.handler.message.MsgHandlerFactory;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
 import com.ershi.common.exception.BusinessErrorEnum;
 import com.ershi.common.manager.MQProducer;
+import com.ershi.common.manager.MsgIdManager;
 import com.ershi.common.utils.AssertUtil;
+import com.ershi.common.utils.RedisUtils;
 import com.ershi.transaction.annotation.SecureInvoke;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
@@ -28,6 +30,8 @@ import com.ershi.chat.mapper.MessageMapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import java.time.LocalDateTime;
 
 import static com.ershi.chat.domain.table.GroupMemberEntityTableDef.GROUP_MEMBER_ENTITY;
 import static com.ershi.chat.domain.table.RoomFriendEntityTableDef.ROOM_FRIEND_ENTITY;
@@ -40,6 +44,9 @@ import static com.ershi.chat.domain.table.RoomFriendEntityTableDef.ROOM_FRIEND_E
  */
 @Service
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity> implements IMessageService {
+
+    @Resource
+    private MsgIdManager msgIdManager;
 
     @Resource
     private RoomCache roomCache;
@@ -66,8 +73,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
         AbstractMsgHandler<?> msgHandler = MsgHandlerFactory.getMsgHandlerNoNull(chatMsgReq.getMsgType());
         MessageEntity messageEntity = msgHandler.checkAndBuildEntity(chatMsgReq);
 
+        // 生成消息唯一id
+        long msgId = msgIdManager.nextId();
+        messageEntity.setId(msgId);
+        messageEntity.setCreateTime(LocalDateTime.now());
+
         // 异步持久化消息数据，该方法由本地事务表保证可靠性，并在内部进行异步调用
-        Long msgId = SpringUtil.getBean(MessageServiceImpl.class).saveMessage(messageEntity);
+        SpringUtil.getBean(MessageServiceImpl.class).saveMessage(messageEntity);
 
         // 发送可靠消息到mq，该方法由本地事务表保证可靠性，并在内部进行异步调用
         mqProducer.sendSecureMsg(MQConstant.MSG_TOPIC, messageEntity, msgId);
@@ -113,7 +125,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
      * @param messageEntity
      * @return {@link Long } 持久化消息主键
      */
-    @SecureInvoke(maxRetryTimes = 5, async = false)
+    @SecureInvoke(maxRetryTimes = 5, async = true)
     @Override
     public Long saveMessage(MessageEntity messageEntity) {
         this.save(messageEntity);

@@ -99,6 +99,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
 
         // 单聊
         if (roomEntity.isRoomFriend()) {
+            // todo 查询单聊房间修改为缓存
             RoomFriendEntity roomFriend = roomFriendMapper.selectOneByQuery(QueryWrapper.create()
                     .where(ROOM_FRIEND_ENTITY.ROOM_ID.eq(chatMsgReq.getRoomId())));
             // 房间状态检查

@@ -84,6 +84,16 @@ public class RedisKey {
     public static final String MSG_ID_KEY = "msgId";
 
     /**
+     * 记录用户未ack消息id
+     */
+    public static final String MSG_USER_UN_ACK_KEY = "unack:uid_%d";
+
+    /**
+     * 消息简表，用于未ack情况下的重试等策略
+     */
+    public static final String MSG_INFO_KEY = "msg:id_%d";
+
+    /**
      * 获取key
      *
      * @param key 带有模板字符串的key

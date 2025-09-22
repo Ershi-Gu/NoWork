@@ -67,7 +67,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
             // 指定时间内客户端没有发送读事件，视作挂机
             if (state == IdleState.READER_IDLE) {
                 // 用户下线，关闭连接
-                ctx.channel().close();
+//                ctx.channel().close();
             }
         }
         // 握手认证->聊天室身份认证
@@ -97,6 +97,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
             // 发送消息
             case MESSAGE:
                 chatWebSocketService.receiveChatMsg(ctx.channel(), wsBaseReq.getData());
+            // todo 接收方回复ack
         }
     }
 }

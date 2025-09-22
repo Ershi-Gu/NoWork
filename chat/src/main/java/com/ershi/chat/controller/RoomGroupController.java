@@ -5,6 +5,7 @@ import com.ershi.chat.domain.vo.GroupCreateResp;
 import com.ershi.chat.service.IRoomGroupService;
 import com.ershi.common.domain.vo.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author mybatis-flex-helper automatic generation
  * @since 1.0
  */
+@Tag(name = "群聊模块")
 @RestController
 @RequestMapping("/room/group")
 public class RoomGroupController {

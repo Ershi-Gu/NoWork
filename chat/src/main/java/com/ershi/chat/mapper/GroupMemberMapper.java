@@ -4,6 +4,8 @@ import com.ershi.chat.domain.GroupMemberEntity;
 import com.mybatisflex.core.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * 群成员表 映射层。
  *
@@ -14,4 +16,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface GroupMemberMapper extends BaseMapper<GroupMemberEntity> {
 
 
+    List<GroupMemberEntity> getMemberListByRoomId(Long roomId);
 }

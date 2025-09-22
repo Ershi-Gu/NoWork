@@ -20,14 +20,14 @@
     </sql>
 
     <insert id="refreshInBox">
-        insert into contact(`uid`,`room_id`,`last_msg_id`,`active_time`)
+        insert into user_msg_inbox(`uid`,`room_id`,`last_msg_id`,`active_time`)
         values
         <foreach collection="memberUidList" item="uid" separator=",">
             (#{uid},#{roomId},#{lastMsgId},#{activeTime})
         </foreach>
         on DUPLICATE key update
         `last_msg_id`=values(last_msg_id),
-        `active_time`=values(active_time)
-        and is_delete = 0
+        `active_time`=values(active_time),
+        `is_delete`=0
     </insert>
 </mapper>

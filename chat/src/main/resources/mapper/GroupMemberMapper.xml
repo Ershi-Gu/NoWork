@@ -16,4 +16,20 @@
         `id`, `group_id`, `uid`, `role`, `create_time`, `update_time`, `is_delete`
     </sql>
 
+    <select id="getMemberListByRoomId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+            gm.id,
+            gm.group_id,
+            gm.uid,
+            gm.role,
+            gm.create_time,
+            gm.update_time,
+            gm.is_delete
+        from group_member gm
+                 inner join room_group rg
+                            on rg.room_id = #{roomid} and rg.id = gm.group_id and rg.is_delete = 0
+        where gm.is_delete = 0
+    </select>
+
+
 </mapper>

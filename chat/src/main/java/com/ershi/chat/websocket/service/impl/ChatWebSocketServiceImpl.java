@@ -3,6 +3,7 @@ package com.ershi.chat.websocket.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
+import com.ershi.chat.domain.vo.ChatMessageResp;
 import com.ershi.chat.service.IMessageService;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
 import com.ershi.chat.websocket.domain.dto.WSChannelExtraDTO;
@@ -29,6 +30,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -208,6 +210,34 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
             sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.RECEIVE_ACK.getType(),
                     CMReceiveAckResp.build(msgId)));
         });
+    }
+
+    @Override
+    public void sendMsgToUser(List<Long> memberUidList, WSBaseResp<ChatMessageResp> wsResp) {
+        memberUidList.forEach(receiverUid -> {
+            // 获取发送者channel通道
+            CopyOnWriteArrayList<Channel> channels = ONLINE_USER_CHANNELS_MAP.get(receiverUid);
+            if (channels == null || channels.isEmpty()) {
+                return;
+            }
+
+            // 异步向每个通道发送消息
+            websocketVirtualExecutor.execute(() -> {
+                channels.forEach(channel -> {
+                    sendMsg(channel, wsResp);
+                });
+            });
+        });
+    }
+
+    @Override
+    public void sendMsgToAllUser(WSBaseResp<ChatMessageResp> wsResp) {
+        ACTIVE_CHANNELS_MAP.forEach(((channel, wsChannelExtraDTO) -> {
+            // 异步向所有活跃链接发送消息
+            websocketVirtualExecutor.execute(() -> {
+                sendMsg(channel, wsResp);
+            });
+        }));
     }
 
     /**

@@ -1,8 +1,12 @@
 package com.ershi.chat.websocket.service;
 
+import com.ershi.chat.domain.vo.ChatMessageResp;
+import com.ershi.chat.websocket.domain.vo.WSBaseResp;
 import com.ershi.user.domain.entity.UserEntity;
 import com.ershi.user.domain.vo.UserLoginVO;
 import io.netty.channel.Channel;
+
+import java.util.List;
 
 /**
  * @author Ershi-Gu.
@@ -39,4 +43,19 @@ public interface ChatWebSocketService {
      * @param data
      */
     void receiveChatMsg(Channel channel, String data);
+
+    /**
+     * 指定收信人发送消息
+     *
+     * @param memberUidList
+     * @param wsResp
+     */
+    void sendMsgToUser(List<Long> memberUidList, WSBaseResp<ChatMessageResp> wsResp);
+
+    /**
+     * 发送全体消息
+     *
+     * @param wsResp
+     */
+    void sendMsgToAllUser(WSBaseResp<ChatMessageResp> wsResp);
 }

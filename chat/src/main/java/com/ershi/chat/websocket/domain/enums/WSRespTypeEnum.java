@@ -20,6 +20,7 @@ public enum WSRespTypeEnum {
     ERROR(-1, "错误消息"),
     AUTHORIZE_SUCCESS(1, "用户身份认证成功"),
     RECEIVE_ACK(2, "接收消息确认"),
+    SEND_CHAT_MESSAGE(3, "发送聊天室消息"),
     ;
 
     /**

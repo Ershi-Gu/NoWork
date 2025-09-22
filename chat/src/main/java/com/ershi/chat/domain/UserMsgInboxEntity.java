@@ -51,6 +51,12 @@ public class UserMsgInboxEntity {
     private LocalDateTime readTime;
 
     /**
+     * 冗余字段，该房间最后一条消息id
+     */
+    @Column(value = "last_msg_id")
+    private Long lastMsgId;
+
+    /**
      * 冗余字段，该房间最后活跃时间
      */
     @Column(value = "active_time")
@@ -73,77 +79,4 @@ public class UserMsgInboxEntity {
      */
     @Column(value = "is_delete")
     private Integer isDelete;
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getUid() {
-        return uid;
-    }
-
-    public void setUid(Long uid) {
-        this.uid = uid;
-    }
-
-    public Long getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
-    }
-
-    public Long getReadMsgId() {
-        return readMsgId;
-    }
-
-    public void setReadMsgId(Long readMsgId) {
-        this.readMsgId = readMsgId;
-    }
-
-    public LocalDateTime getReadTime() {
-        return readTime;
-    }
-
-    public void setReadTime(LocalDateTime readTime) {
-        this.readTime = readTime;
-    }
-
-    public LocalDateTime getActiveTime() {
-        return activeTime;
-    }
-
-    public void setActiveTime(LocalDateTime activeTime) {
-        this.activeTime = activeTime;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Integer getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Integer isDelete) {
-        this.isDelete = isDelete;
-    }
 }

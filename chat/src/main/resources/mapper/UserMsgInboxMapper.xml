@@ -9,6 +9,7 @@
         <result column="room_id" jdbcType="BIGINT" property="roomId"/>
         <result column="read_msg_id" jdbcType="BIGINT" property="readMsgId"/>
         <result column="read_time" jdbcType="TIMESTAMP" property="readTime"/>
+        <result column="last_msg_id" jdbcType="BIGINT" property="lastMsgId"/>
         <result column="active_time" jdbcType="TIMESTAMP" property="activeTime"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
@@ -18,4 +19,15 @@
         `id`, `uid`, `room_id`, `read_msg_id`, `read_time`, `active_time`, `create_time`, `update_time`, `is_delete`
     </sql>
 
+    <insert id="refreshInBox">
+        insert into contact(`uid`,`room_id`,`last_msg_id`,`active_time`)
+        values
+        <foreach collection="memberUidList" item="uid" separator=",">
+            (#{uid},#{roomId},#{lastMsgId},#{activeTime})
+        </foreach>
+        on DUPLICATE key update
+        `last_msg_id`=values(last_msg_id),
+        `active_time`=values(active_time)
+        and is_delete = 0
+    </insert>
 </mapper>

@@ -20,6 +20,7 @@ public enum WSReqTypeEnum {
 
     HEARTBEAT(1, "心跳包"),
     MESSAGE(2, "接收客户端发送的消息"),
+    MSG_RECEIVE_ACK(3, "客户端接收聊天消息确认")
 
     ;
 

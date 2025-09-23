@@ -2,27 +2,34 @@ package com.ershi.chat.service.impl;
 
 
 import cn.hutool.extra.spring.SpringUtil;
+import com.alibaba.fastjson2.JSON;
 import com.ershi.chat.constants.MQConstant;
 import com.ershi.chat.domain.GroupMemberEntity;
 import com.ershi.chat.domain.RoomEntity;
 import com.ershi.chat.domain.RoomFriendEntity;
 import com.ershi.chat.domain.RoomGroupEntity;
+import com.ershi.chat.domain.dto.MsgAckReq;
 import com.ershi.chat.domain.enums.RoomFriendStatusEnum;
 import com.ershi.chat.mapper.GroupMemberMapper;
 import com.ershi.chat.mapper.RoomFriendMapper;
+import com.ershi.chat.service.cache.MsgAckCache;
 import com.ershi.chat.service.cache.RoomCache;
 import com.ershi.chat.service.cache.RoomGroupCache;
 import com.ershi.chat.service.handler.message.AbstractMsgHandler;
 import com.ershi.chat.service.handler.message.MsgHandlerFactory;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
 import com.ershi.common.exception.BusinessErrorEnum;
+import com.ershi.common.exception.BusinessException;
 import com.ershi.common.manager.MQProducer;
 import com.ershi.common.manager.MsgIdManager;
 import com.ershi.common.utils.AssertUtil;
 import com.ershi.common.utils.RedisUtils;
 import com.ershi.transaction.annotation.SecureInvoke;
 import com.mybatisflex.core.query.QueryWrapper;
+import io.netty.channel.Channel;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import com.ershi.chat.service.IMessageService;
 import com.ershi.chat.domain.message.MessageEntity;
@@ -32,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static com.ershi.chat.domain.table.GroupMemberEntityTableDef.GROUP_MEMBER_ENTITY;
 import static com.ershi.chat.domain.table.RoomFriendEntityTableDef.ROOM_FRIEND_ENTITY;
@@ -42,6 +50,7 @@ import static com.ershi.chat.domain.table.RoomFriendEntityTableDef.ROOM_FRIEND_E
  * @author mybatis-flex-helper automatic generation
  * @since 1.0
  */
+@Slf4j
 @Service
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity> implements IMessageService {
 
@@ -62,6 +71,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
 
     @Resource
     private MQProducer mqProducer;
+
+    @Resource
+    private MsgAckCache msgAckCache;
 
     @Transactional
     @Override
@@ -131,5 +143,15 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
     public Long saveMessage(MessageEntity messageEntity) {
         this.save(messageEntity);
         return messageEntity.getId();
+    }
+
+    @Override
+    public void confirmMsgAck(MsgAckReq msgAckReq) {
+
+        AssertUtil.isFalse(ObjectUtils.anyNull(msgAckReq.getUid(), msgAckReq.getMsgId()),
+                BusinessErrorEnum.MSG_FORMAT_ERROR, "MsgAck参数错误");
+
+        // 移除未ack记录
+        msgAckCache.removeUnAckMsg(msgAckReq.getUid(), msgAckReq.getMsgId());
     }
 }

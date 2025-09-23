@@ -58,4 +58,11 @@ public interface ChatWebSocketService {
      * @param wsResp
      */
     void sendMsgToAllUser(WSBaseResp<ChatMessageResp> wsResp);
+
+    /**
+     * 客户端接收消息确认ack
+     *
+     * @param data
+     */
+    void confirmMsgAck(String data);
 }

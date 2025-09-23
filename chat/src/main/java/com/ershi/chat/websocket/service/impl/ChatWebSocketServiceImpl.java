@@ -3,6 +3,7 @@ package com.ershi.chat.websocket.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
+import com.ershi.chat.domain.dto.MsgAckReq;
 import com.ershi.chat.domain.vo.ChatMessageResp;
 import com.ershi.chat.service.IMessageService;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
@@ -207,7 +208,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
             // 调用chat服务持久化数据并发送消息
             Long msgId = messageService.sendMultiTypeMessage(chatMsgReq);
             // 回复客户端ack -> 消息已接收
-            sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.RECEIVE_ACK.getType(),
+            sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.MSG_RECEIVE_ACK.getType(),
                     CMReceiveAckResp.build(msgId)));
         });
     }
@@ -238,6 +239,19 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
                 sendMsg(channel, wsResp);
             });
         }));
+    }
+
+    @Override
+    public void confirmMsgAck(String data) {
+        // 消息格式转换
+        MsgAckReq msgAckReq;
+        try {
+            msgAckReq = JSON.parseObject(data, MsgAckReq.class);
+        } catch (Exception e) {
+            throw new BusinessException(BusinessErrorEnum.MSG_FORMAT_ERROR.getErrorCode(), "MsgAck消息格式错误");
+        }
+
+        messageService.confirmMsgAck(msgAckReq);
     }
 
     /**

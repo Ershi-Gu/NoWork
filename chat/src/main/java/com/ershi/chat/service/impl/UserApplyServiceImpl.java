@@ -15,6 +15,7 @@ import com.ershi.chat.service.IRoomFriendService;
 import com.ershi.chat.service.IUserApplyService;
 import com.ershi.chat.service.IUserFriendService;
 import com.ershi.chat.service.adapter.UserApplyAdapter;
+import com.ershi.common.aop.RedissonLock;
 import com.ershi.common.exception.BusinessErrorEnum;
 import com.ershi.common.exception.SystemCommonErrorEnum;
 import com.ershi.common.utils.AssertUtil;
@@ -59,7 +60,6 @@ public class UserApplyServiceImpl extends ServiceImpl<UserApplyMapper, UserApply
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    // todo 申请好友加锁
     public void applyFriend(Long targetUid, String targetAccount, String applyMsg) {
         // 判断是id申请还是账号申请，若是账号申请则查询id
         Long realTargetUid = resolveTargetUid(targetUid, targetAccount);
@@ -97,7 +97,7 @@ public class UserApplyServiceImpl extends ServiceImpl<UserApplyMapper, UserApply
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    // todo 审批请求加锁
+    @RedissonLock(key = "#applyId")
     public void approveFriend(Long applyId, Integer status) {
         Long uid = RequestHolder.get().getUid();
         AssertUtil.isTrue(Stream.of(applyId, status).allMatch(Objects::nonNull), BusinessErrorEnum.API_PARAM_ERROR);

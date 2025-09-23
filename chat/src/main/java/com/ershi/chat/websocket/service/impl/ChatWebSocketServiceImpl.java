@@ -191,6 +191,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         try {
             chatMsgReq = JSON.parseObject(data, ChatMsgReq.class);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new BusinessException(BusinessErrorEnum.MSG_FORMAT_ERROR);
         }
 

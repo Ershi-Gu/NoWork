@@ -12,13 +12,13 @@ import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 
 /**
- * 封装 Redisson 相关功能，例如限流
+ * Redisson实现限流服务
  *
  * @author Ershi-Gu.
  * @since 2025-09-05
  */
 @Component
-public class RedissonManager {
+public class RedissonLimitManager {
 
     @Resource
     private RedissonClient redissonClient;

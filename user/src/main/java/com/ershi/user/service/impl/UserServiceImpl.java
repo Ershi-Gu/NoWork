@@ -5,7 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.ershi.common.constants.RedisKey;
 import com.ershi.common.exception.BusinessErrorEnum;
 import com.ershi.common.exception.SystemCommonErrorEnum;
-import com.ershi.common.manager.RedissonManager;
+import com.ershi.common.manager.RedissonLimitManager;
 import com.ershi.common.utils.AssertUtil;
 import com.ershi.common.utils.RedisUtils;
 import com.ershi.common.utils.RequestHolder;
@@ -45,7 +45,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     private EmailManager emailManager;
 
     @Resource
-    private RedissonManager redissonManager;
+    private RedissonLimitManager redissonLimitManager;
 
     @Resource
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -74,7 +74,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         validateEmail(email);
 
         // ip限流，120s内仅可请求一次
-        redissonManager.doOverallRateLimit(RequestHolder.get().getIp(),
+        redissonLimitManager.doOverallRateLimit(RequestHolder.get().getIp(),
                 EMAIL_CAPTCHA_RATE, EMAIL_CAPTCHA_INTERVAL, RateIntervalUnit.SECONDS);
 
         // 生成验证码，有效期5分钟

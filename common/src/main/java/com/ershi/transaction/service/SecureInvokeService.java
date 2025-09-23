@@ -53,7 +53,7 @@ public class SecureInvokeService {
     private final Executor executor;
 
     /**
-     * 重试方法，每5秒查询一次本地事务表，并进行异步重试
+     * todo 正式上线请打开注释 重试方法，每5秒查询一次本地事务表，并进行异步重试
      */
 //    @Scheduled(cron = "*/5 * * * * ?")
     public void retry() {

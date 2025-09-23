@@ -30,11 +30,4 @@ public interface IMessageService extends IService<MessageEntity> {
      * @return {@link Long }
      */
     Long saveMessage(MessageEntity messageEntity);
-
-    /**
-     * 客户端接收消息ack确认
-     *
-     * @param msgAckReq
-     */
-    void confirmMsgAck(MsgAckReq msgAckReq);
 }

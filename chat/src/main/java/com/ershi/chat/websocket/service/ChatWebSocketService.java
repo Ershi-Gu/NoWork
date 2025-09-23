@@ -45,6 +45,13 @@ public interface ChatWebSocketService {
     void receiveChatMsg(Channel channel, String data);
 
     /**
+     * 获取channel在线用户uid
+     *
+     * @return {@link List }<{@link Long }>
+     */
+    List<Long> getOnlineUids();
+
+    /**
      * 指定收信人发送消息
      *
      * @param memberUidList

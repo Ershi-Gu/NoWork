@@ -3,6 +3,7 @@ package com.ershi.chat.consumer;
 import com.ershi.chat.constants.MQConstant;
 import com.ershi.chat.domain.RoomEntity;
 import com.ershi.chat.domain.RoomFriendEntity;
+import com.ershi.chat.domain.enums.RoomTypeEnum;
 import com.ershi.chat.domain.message.MessageEntity;
 import com.ershi.chat.domain.vo.ChatMessageResp;
 import com.ershi.chat.mapper.RoomMapper;
@@ -59,17 +60,20 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
         // 获取会话(room)信息
         RoomEntity roomEntity = roomCache.get(messageEntity.getRoomId());
 
-        // 确定推送范围
-        List<Long> memberUidList = getMemberUidList(roomEntity, messageEntity);
+        // 获取所有接收消息的用户uid
+        List<Long> receiverUids = getReceiverUids(roomEntity, messageEntity);
 
         // 更新收件箱
-        refreshReceiveBox(roomEntity, messageEntity, memberUidList);
+        refreshReceiveBox(roomEntity, messageEntity, receiverUids);
+
+        // 确定推送范围 -> 过滤不在线用户
+        List<Long> onlineReceiverUids = confirmPushUids(receiverUids);
 
         // 推送前写入ack缓存，作投递表（redis）
-        msgAckCache.addUnAckMsg(memberUidList, messageEntity.getId());
+        msgAckCache.addUnAckMsg(onlineReceiverUids, messageEntity.getId());
 
         // ws推送消息
-        pushMessage(memberUidList, messageEntity);
+        pushMessage(RoomTypeEnum.of(roomEntity.getType()), onlineReceiverUids, messageEntity);
     }
 
     /**
@@ -79,26 +83,41 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
      * @param messageEntity
      * @return {@link List }<{@link Long }>
      */
-    private List<Long> getMemberUidList(RoomEntity roomEntity, MessageEntity messageEntity) {
-        List<Long> memberUidList = new ArrayList<>();
+    private List<Long> getReceiverUids(RoomEntity roomEntity, MessageEntity messageEntity) {
+        List<Long> receiverUids = new ArrayList<>();
 
         // 若是全员群则直接返回空列表
         if (roomEntity.isAllRoom()) {
-            return memberUidList;
+            return receiverUids;
         }
 
         if (roomEntity.isRoomFriend()) {
             // 单聊
             RoomFriendEntity roomFriendEntity = roomFriendCache.getRoomFriendByRoomId(roomEntity.getId());
             Long senderId = messageEntity.getSenderId();
-            memberUidList.add(roomFriendEntity.getUid1().equals(senderId)
+            receiverUids.add(roomFriendEntity.getUid1().equals(senderId)
                     ? roomFriendEntity.getUid2()
                     : roomFriendEntity.getUid1());
         } else {
             // 群聊
-            memberUidList = groupMemberCache.getRoomMemberUidList(roomEntity.getId());
+            receiverUids = groupMemberCache.getRoomMemberUidList(roomEntity.getId());
         }
-        return memberUidList;
+
+        return receiverUids;
+    }
+
+    /**
+     * 确定推送范围 -> 过滤不在线用户
+     *
+     * @param receiverUids
+     * @return {@link List }<{@link Long }>
+     */
+    private List<Long> confirmPushUids(List<Long> receiverUids) {
+        // 过滤不在线用户
+        List<Long> onlineUids = chatWebSocketService.getOnlineUids();
+        return receiverUids.stream()
+                .filter(onlineUids::contains)
+                .toList();
     }
 
 
@@ -135,17 +154,17 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
      * @param memberUidList
      * @param messageEntity
      */
-    private void pushMessage(List<Long> memberUidList, MessageEntity messageEntity) {
+    private void pushMessage(RoomTypeEnum allFlag, List<Long> memberUidList, MessageEntity messageEntity) {
         // 转换消息格式
         ChatMessageResp chatMessageResp = MsgAdapter.buildChatMsgResp(messageEntity);
         WSBaseResp<ChatMessageResp> wsResp = WSBaseResp.build(WSRespTypeEnum.SEND_CHAT_MESSAGE.getType(), chatMessageResp);
 
-        if (memberUidList == null || memberUidList.isEmpty()) {
-            // 发送指定用户
-            chatWebSocketService.sendMsgToUser(memberUidList, wsResp);
-        } else {
+        if (allFlag.equals(RoomTypeEnum.ALL)) {
             // 发送全体成员
             chatWebSocketService.sendMsgToAllUser(wsResp);
+        } else {
+            // 发送指定用户
+            chatWebSocketService.sendMsgToUser(memberUidList, wsResp);
         }
     }
 }

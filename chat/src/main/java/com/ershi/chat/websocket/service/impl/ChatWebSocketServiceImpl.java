@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSON;
 import com.ershi.chat.domain.dto.MsgAckReq;
 import com.ershi.chat.domain.vo.ChatMessageResp;
 import com.ershi.chat.service.IMessageService;
+import com.ershi.chat.service.cache.MsgAckCache;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
 import com.ershi.chat.websocket.domain.dto.WSChannelExtraDTO;
 import com.ershi.chat.websocket.domain.enums.UserActiveTypeEnum;
@@ -18,6 +19,7 @@ import com.ershi.chat.websocket.service.ChatWebSocketService;
 import com.ershi.chat.websocket.utils.NettyUtil;
 import com.ershi.common.exception.BusinessErrorEnum;
 import com.ershi.common.exception.BusinessException;
+import com.ershi.common.utils.AssertUtil;
 import com.ershi.user.domain.entity.UserEntity;
 import com.ershi.user.domain.vo.UserLoginVO;
 import com.ershi.chat.websocket.event.UserOnlineEvent;
@@ -27,6 +29,7 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +58,9 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
 
     @Resource
     private IMessageService messageService;
+
+    @Resource
+    private MsgAckCache msgAckCache;
 
     @Resource
     private Executor websocketVirtualExecutor;
@@ -99,6 +105,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         }
 
         // 3. token有效 -> 获取当前登录用户信息
+        // todo 修改为缓存获取
         UserEntity loginUser = userMapper.selectOneByQuery(QueryWrapper.create().where(USER_ENTITY.ID.eq(loginIdByToken)));
 
         // 3.1 用户上线，更新信息，发送事件
@@ -215,6 +222,11 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
     }
 
     @Override
+    public List<Long> getOnlineUids() {
+        return ONLINE_USER_CHANNELS_MAP.keySet().stream().toList();
+    }
+
+    @Override
     public void sendMsgToUser(List<Long> memberUidList, WSBaseResp<ChatMessageResp> wsResp) {
         memberUidList.forEach(receiverUid -> {
             // 获取发送者channel通道
@@ -251,8 +263,11 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         } catch (Exception e) {
             throw new BusinessException(BusinessErrorEnum.MSG_FORMAT_ERROR.getErrorCode(), "MsgAck消息格式错误");
         }
+        AssertUtil.isFalse(ObjectUtils.anyNull(msgAckReq.getUid(), msgAckReq.getMsgId()),
+                BusinessErrorEnum.MSG_FORMAT_ERROR, "MsgAck参数错误");
 
-        messageService.confirmMsgAck(msgAckReq);
+        // 移除未ack记录
+        msgAckCache.removeUnAckMsg(msgAckReq.getUid(), msgAckReq.getMsgId());
     }
 
     /**

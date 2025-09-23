@@ -70,7 +70,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
             IdleState state = event.state();
             // 指定时间内客户端没有发送读事件，视作挂机
             if (state == IdleState.READER_IDLE) {
-                // 用户下线，关闭连接
+                // todo 正式上线请打开注释 用户下线，关闭连接
 //                ctx.channel().close();
             }
         }

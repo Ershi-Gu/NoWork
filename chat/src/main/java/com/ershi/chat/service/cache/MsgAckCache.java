@@ -3,6 +3,7 @@ package com.ershi.chat.service.cache;
 import com.ershi.common.constants.RedisKey;
 import com.ershi.common.utils.RedisUtils;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.Set;
  * @author Ershi-Gu.
  * @since 2025-09-22
  */
+@Slf4j
 @Service
 public class MsgAckCache {
 
@@ -40,6 +42,8 @@ public class MsgAckCache {
             }
             return null;
         });
+
+        log.info("=======> 消息推送unack标志已生成，等待客户端ack");
     }
 
     /**

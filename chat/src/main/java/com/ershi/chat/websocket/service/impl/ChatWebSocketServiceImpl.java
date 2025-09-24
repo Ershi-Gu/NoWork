@@ -227,7 +227,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
     }
 
     @Override
-    public void sendMsgToUser(List<Long> memberUidList, WSBaseResp<ChatMessageResp> wsResp) {
+    public void sendMsgToUser(List<Long> memberUidList, WSBaseResp<?> wsResp) {
         memberUidList.forEach(receiverUid -> {
             // 获取发送者channel通道
             CopyOnWriteArrayList<Channel> channels = ONLINE_USER_CHANNELS_MAP.get(receiverUid);
@@ -235,22 +235,29 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
                 return;
             }
 
-            // 异步向每个通道发送消息
-            websocketVirtualExecutor.execute(() -> {
-                channels.forEach(channel -> {
-                    sendMsg(channel, wsResp);
-                });
+            // 向对应通道发送消息
+            channels.forEach(channel -> {
+                sendMsg(channel, wsResp);
             });
+
+//            // 异步向每个通道发送消息
+//            websocketVirtualExecutor.execute(() -> {
+//                channels.forEach(channel -> {
+//                    sendMsg(channel, wsResp);
+//                });
+//            });
         });
     }
 
     @Override
-    public void sendMsgToAllUser(WSBaseResp<ChatMessageResp> wsResp) {
+    public void sendMsgToAllUser(WSBaseResp<?> wsResp) {
         ACTIVE_CHANNELS_MAP.forEach(((channel, wsChannelExtraDTO) -> {
-            // 异步向所有活跃链接发送消息
-            websocketVirtualExecutor.execute(() -> {
-                sendMsg(channel, wsResp);
-            });
+            sendMsg(channel, wsResp);
+
+//            // 异步向所有活跃链接发送消息
+//            websocketVirtualExecutor.execute(() -> {
+//                sendMsg(channel, wsResp);
+//            });
         }));
     }
 

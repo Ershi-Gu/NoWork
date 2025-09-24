@@ -57,14 +57,14 @@ public interface ChatWebSocketService {
      * @param memberUidList
      * @param wsResp
      */
-    void sendMsgToUser(List<Long> memberUidList, WSBaseResp<ChatMessageResp> wsResp);
+    void sendMsgToUser(List<Long> memberUidList, WSBaseResp<?> wsResp);
 
     /**
      * 发送全体消息
      *
      * @param wsResp
      */
-    void sendMsgToAllUser(WSBaseResp<ChatMessageResp> wsResp);
+    void sendMsgToAllUser(WSBaseResp<?> wsResp);
 
     /**
      * 客户端接收消息确认ack

@@ -6,10 +6,13 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 消息投递表（Redis实现），用作消息投递后的接收方ack确认记录
@@ -31,12 +34,12 @@ public class MsgAckCache {
      * @param msgId
      */
     public void addUnAckMsg(List<Long> memberUidList, Long msgId) {
-        long expireTimestamp = generateExpireTimestamp();
+        long ackDeadline = getAckDeadline();
         stringRedisTemplate.executePipelined((RedisCallback<Object>) connection -> {
             for (Long uid : memberUidList) {
                 connection.zAdd(
                         stringRedisTemplate.getStringSerializer().serialize(getKey(uid)),
-                        expireTimestamp,
+                        ackDeadline,
                         stringRedisTemplate.getStringSerializer().serialize(msgId.toString())
                 );
             }
@@ -59,10 +62,35 @@ public class MsgAckCache {
     /**
      * 获取超时消息
      */
-    public Set<String> getExpiredUnAckMsg(Long uid, long nowTimestamp) {
-        return RedisUtils.zRange(getKey(uid), 0, nowTimestamp);
+    public Set<Long> getExpiredUnAckMsg() {
+        // 获取当前时间一分钟（ack过期时间）前的超时消息，避免全量扫描
+        Set<Long> expiredMsgIds = new HashSet<>();
+        long cutoff = System.currentTimeMillis() - 60_000;
+
+        // 遍历所有 unack:uid_* key
+        Set<String> keys = stringRedisTemplate.keys("unack:uid_*");
+        if (keys.isEmpty()) {
+            return expiredMsgIds;
+        }
+
+        for (String key : keys) {
+            ZSetOperations<String, String> zSetOps = stringRedisTemplate.opsForZSet();
+            // 获取 score <= cutoff 的 msgId
+            Set<String> expired = zSetOps.rangeByScore(key, 0, cutoff);
+            if (expired != null && !expired.isEmpty()) {
+                expiredMsgIds.addAll(expired.stream().map(Long::parseLong).collect(Collectors.toSet()));
+            }
+        }
+
+        return expiredMsgIds;
     }
 
+    /**
+     * 获取用户未确认消息的key
+     *
+     * @param uid
+     * @return {@link String }
+     */
     private String getKey(Long uid) {
         return RedisKey.getKey(RedisKey.MSG_USER_UN_ACK_KEY, uid);
     }
@@ -72,7 +100,7 @@ public class MsgAckCache {
      *
      * @return 毫秒级时间戳
      */
-    public static long generateExpireTimestamp() {
+    public static long getAckDeadline() {
         long now = System.currentTimeMillis();
         return now + 60L * 1000L;
     }

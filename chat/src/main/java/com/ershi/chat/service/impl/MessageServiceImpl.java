@@ -3,6 +3,7 @@ package com.ershi.chat.service.impl;
 
 import cn.hutool.extra.spring.SpringUtil;
 import com.ershi.chat.constants.MQConstant;
+import com.ershi.chat.constants.SystemMsgConstant;
 import com.ershi.chat.domain.GroupMemberEntity;
 import com.ershi.chat.domain.RoomEntity;
 import com.ershi.chat.domain.RoomFriendEntity;
@@ -12,10 +13,7 @@ import com.ershi.chat.domain.message.MessageEntity;
 import com.ershi.chat.mapper.GroupMemberMapper;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.service.IMessageService;
-import com.ershi.chat.service.cache.MsgAckCache;
-import com.ershi.chat.service.cache.RoomCache;
-import com.ershi.chat.service.cache.RoomFriendCache;
-import com.ershi.chat.service.cache.RoomGroupCache;
+import com.ershi.chat.service.cache.*;
 import com.ershi.chat.service.handler.message.AbstractMsgHandler;
 import com.ershi.chat.service.handler.message.MsgHandlerFactory;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
@@ -32,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static com.ershi.chat.domain.table.GroupMemberEntityTableDef.GROUP_MEMBER_ENTITY;
 
@@ -52,19 +51,16 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
     private RoomCache roomCache;
 
     @Resource
-    private RoomGroupCache roomGroupCache;
+    private RoomGroupByRoomIdCache roomGroupByRoomIdCache;
 
     @Resource
     private RoomFriendCache roomFriendCache;
 
     @Resource
-    private GroupMemberMapper groupMemberMapper;
+    private GroupMemberCache groupMemberCache;
 
     @Resource
     private MQProducer mqProducer;
-
-    @Resource
-    private MsgAckCache msgAckCache;
 
     @Transactional
     @Override
@@ -112,12 +108,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
         }
         else {
             // 群聊
-            RoomGroupEntity roomGroup = roomGroupCache.get(chatMsgReq.getRoomId());
-            GroupMemberEntity groupMember = groupMemberMapper.selectOneByQuery(QueryWrapper.create()
-                    .where(GROUP_MEMBER_ENTITY.GROUP_ID.eq(roomGroup.getId())
-                            .and(GROUP_MEMBER_ENTITY.UID.eq(senderId))));
+            RoomGroupEntity roomGroup = roomGroupByRoomIdCache.get(chatMsgReq.getRoomId());
+            GroupMemberEntity groupMember = groupMemberCache.getByGroupIdAndUid(roomGroup.getId(), senderId);
+
             // 群成员状态检查
-            AssertUtil.isNotEmpty(groupMember, BusinessErrorEnum.MEMBER_NOT_EXIST_ERROR);
+            if (!Objects.equals(senderId, SystemMsgConstant.SENDER_ID)) {
+                AssertUtil.isNotEmpty(groupMember, BusinessErrorEnum.MEMBER_NOT_EXIST_ERROR);
+            }
         }
     }
 

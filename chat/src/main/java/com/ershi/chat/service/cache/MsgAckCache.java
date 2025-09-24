@@ -43,7 +43,7 @@ public class MsgAckCache {
             return null;
         });
 
-        log.info("=======> 消息推送unack标志已生成，等待客户端ack");
+        log.info("=======> 消息:{} 已推送，等待客户端ack", msgId);
     }
 
     /**

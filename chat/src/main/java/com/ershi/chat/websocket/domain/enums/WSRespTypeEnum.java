@@ -21,6 +21,7 @@ public enum WSRespTypeEnum {
     AUTHORIZE_SUCCESS(1, "用户身份认证成功"),
     MSG_RECEIVE_ACK(2, "服务端接收聊天消息确认"),
     SEND_CHAT_MESSAGE(3, "发送聊天室消息"),
+    APPLY_FRIEND(4, "好友申请"),
     ;
 
     /**

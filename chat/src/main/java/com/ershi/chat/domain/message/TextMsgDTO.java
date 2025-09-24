@@ -1,6 +1,7 @@
 package com.ershi.chat.domain.message;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class TextMsgDTO implements BaseMsgDTO, Serializable {
      * 文本消息内容
      */
     @Size(max = 1024, message = "消息内容过长啊兄嘚")
-    @NotBlank
+    @NotNull
     private String content;
 
     /**

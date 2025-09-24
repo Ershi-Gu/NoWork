@@ -1,5 +1,8 @@
 package com.ershi.chat.event;
 
+import com.ershi.chat.domain.RoomEntity;
+import com.ershi.chat.domain.RoomFriendEntity;
+import com.ershi.chat.domain.UserApplyEntity;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
@@ -12,8 +15,13 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class FriendAddedEvent extends ApplicationEvent {
 
+    private final Long uid;
 
-    public FriendAddedEvent(Object source) {
+    private final RoomFriendEntity roomFriendEntity;
+
+    public FriendAddedEvent(Object source, Long uid, RoomFriendEntity roomFriendEntity) {
         super(source);
+        this.uid = uid;
+        this.roomFriendEntity = roomFriendEntity;
     }
 }

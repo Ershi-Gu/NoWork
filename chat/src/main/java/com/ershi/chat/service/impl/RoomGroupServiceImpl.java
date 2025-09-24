@@ -92,8 +92,9 @@ public class RoomGroupServiceImpl extends ServiceImpl<RoomGroupMapper, RoomGroup
                 members.stream()).toList();
         groupMemberService.saveBatch(groupMembers);
 
-        // todo 发布群聊创建事件 -> 向群成员发送一条入群信息
-        applicationEventPublisher.publishEvent(new CreateRoomGroupEvent(this, roomGroupEntity, groupMembers));
+        // 发布群聊创建事件 -> 向群成员发送一条入群信息
+        applicationEventPublisher.publishEvent(new CreateRoomGroupEvent(this, roomGroupEntity,
+                groupMembers, RequestHolder.get().getUid()));
 
         return GroupCreateResp.builder()
                 .id(roomGroupEntity.getId())

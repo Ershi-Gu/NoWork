@@ -87,12 +87,12 @@ public class UserApplyServiceImpl extends ServiceImpl<UserApplyMapper, UserApply
         }
 
         // 记录db
-        UserApplyEntity insert = UserApplyAdapter.buildApplyFriendRecord(uid, targetUid, applyMsg);
-        boolean save = this.save(insert);
+        UserApplyEntity userApplyEntity = UserApplyAdapter.buildApplyFriendRecord(uid, targetUid, applyMsg);
+        boolean save = this.save(userApplyEntity);
         AssertUtil.isTrue(save, SystemCommonErrorEnum.DB_ERROR);
 
-        // todo 发布好友申请事件 -> 发送消息通知目标
-        applicationEventPublisher.publishEvent(new ApplyFriendEvent(this, insert));
+        // 发布好友申请事件 -> 发送消息通知目标
+        applicationEventPublisher.publishEvent(new ApplyFriendEvent(this, userApplyEntity));
     }
 
     @Override
@@ -121,8 +121,8 @@ public class UserApplyServiceImpl extends ServiceImpl<UserApplyMapper, UserApply
         // 创建单聊房间，db
         RoomFriendEntity roomFriendEntity = roomFriendService.createRoomFriend(uid, userApplyEntity.getUid());
 
-        // todo 发送好友添加成功事件 -> 向单聊房间发送一条消息
-        applicationEventPublisher.publishEvent(new FriendAddedEvent(this));
+        // 发送好友添加成功事件 -> 向单聊房间发送一条消息
+        applicationEventPublisher.publishEvent(new FriendAddedEvent(this, uid, roomFriendEntity));
     }
 
     @Override

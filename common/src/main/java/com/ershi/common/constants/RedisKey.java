@@ -11,7 +11,7 @@ public class RedisKey {
     /**
      * 项目基础key
      */
-    private static final String BASE_KEY = "noWork:";
+    public static final String BASE_KEY = "noWork:";
 
     /**
      * 请求唯一id

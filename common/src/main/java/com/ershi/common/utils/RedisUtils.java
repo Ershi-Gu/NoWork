@@ -806,7 +806,10 @@ public class RedisUtils {
      * @return
      */
     public static Long zRemove(String key, Object... values) {
-        return stringRedisTemplate.opsForZSet().remove(key, values);
+        Object[] strValues = Arrays.stream(values)
+                .map(String::valueOf)
+                .toArray();
+        return stringRedisTemplate.opsForZSet().remove(key, strValues);
     }
 
     public static Long zRemove(String key, Object value) {

@@ -50,6 +50,9 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
     private MsgAckCache msgAckCache;
 
     @Resource
+    private MessageCache messageCache;
+
+    @Resource
     private UserMsgInboxMapper userMsgInboxMapper;
 
     @Resource
@@ -71,6 +74,9 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
 
         // 推送前写入ack缓存，作投递表（redis）
         msgAckCache.addUnAckMsg(onlineReceiverUids, messageEntity.getId());
+
+        // 存储消息简表（redis） -> 用于ack超时重试
+        messageCache.addMsgToCache(messageEntity);
 
         // ws推送消息
         pushMessage(RoomTypeEnum.of(roomEntity.getType()), onlineReceiverUids, messageEntity);

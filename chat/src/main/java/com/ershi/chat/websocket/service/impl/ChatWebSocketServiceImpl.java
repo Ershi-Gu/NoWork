@@ -34,6 +34,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -274,7 +275,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
                 BusinessErrorEnum.MSG_FORMAT_ERROR, "MsgAck参数错误");
 
         // 移除未ack记录
-        msgAckCache.removeUnAckMsg(msgAckReq.getUid(), msgAckReq.getMsgId());
+        msgAckCache.removeUnAckMsg(msgAckReq.getUid(), Collections.singletonList(msgAckReq.getMsgId()));
     }
 
     /**

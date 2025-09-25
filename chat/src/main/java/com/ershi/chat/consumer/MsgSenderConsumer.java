@@ -145,8 +145,8 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
         roomMapper.update(roomEntity);
 
         if (isHot) {
-            // 热点会话-额外使用redis存储会话更新时间，聚合时只需要从redis获取即可
-            hotRoomCache.refreshActiveTime(roomEntity.getId(), messageEntity.getCreateTime());
+            // 热点会话-使用redis存储最新消息id，聚合时只需要从redis获取即可
+            hotRoomCache.refreshLastMsgId(roomEntity.getId(), messageEntity.getId());
         } else {
             // 非热点会话-更新用户收件箱
             userMsgInboxMapper.refreshInBox(memberUidList, roomEntity.getId(),

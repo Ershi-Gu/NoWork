@@ -1,17 +1,10 @@
 package com.ershi.chat.service.cache;
 
-import cn.hutool.core.lang.Pair;
 import com.ershi.common.constants.RedisKey;
-import com.ershi.common.domain.dto.CursorPageBaseReq;
-import com.ershi.common.domain.vo.CursorPageBaseResp;
-import com.ershi.common.utils.CursorUtils;
 import com.ershi.common.utils.RedisUtils;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Set;
 
 /**
@@ -24,34 +17,23 @@ import java.util.Set;
 public class HotRoomCache {
 
     /**
-     * 游标查询热点会话活跃时间 [roomId->active_time]
+     * 降序获取热点会话lastMsgId在min和max之间的数据，包含边界
      *
-     * @param pageBaseReq
-     * @return
+     * @param hotMaxMsgId
+     * @return {@link Set }<{@link ZSetOperations.TypedTuple }<{@link String }>> 返回最新的会话在前
      */
-    public CursorPageBaseResp<Pair<Long, Double>> getRoomCursorPage(CursorPageBaseReq pageBaseReq) {
-        return CursorUtils.getCursorPageByRedis(pageBaseReq, RedisKey.getKey(RedisKey.HOT_ROOM_ACTIVE_TIME_KEY), Long::parseLong);
+    public Set<ZSetOperations.TypedTuple<String>> getHotConversionPage(Double hotMaxMsgId, Long pageSize) {
+        return RedisUtils.zReverseRangeByScoreWithScores(RedisKey.getKey(RedisKey.HOT_ROOM_LAST_MSG_KEY),
+                hotMaxMsgId, pageSize);
     }
 
     /**
-     * 获取热点会话活跃时间在hotRecent和hotOld之间的房间，包含边界
-     *
-     * @param hotOld
-     * @param hotRecent
-     * @return {@link Set }<{@link ZSetOperations.TypedTuple }<{@link String }>>
-     */
-    public Set<ZSetOperations.TypedTuple<String>> getRoomRange(Double hotOld, Double hotRecent) {
-        return RedisUtils.zRangeByScoreWithScores(RedisKey.getKey(RedisKey.HOT_ROOM_ACTIVE_TIME_KEY), hotOld, hotRecent);
-    }
-
-    /**
-     * 更新指定热门群会话在记录表中的最新会话时间点-用于热门会话排序
+     * 更新指定热门群会话在记录表中的最新消息id-用于热门会话排序
      *
      * @param roomId
-     * @param refreshTime
+     * @param lastMsgId
      */
-    public void refreshActiveTime(Long roomId, LocalDateTime refreshTime) {
-        long millis = refreshTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-        RedisUtils.zAdd(RedisKey.getKey(RedisKey.HOT_ROOM_ACTIVE_TIME_KEY), roomId, (double) millis);
+    public void refreshLastMsgId(Long roomId, Long lastMsgId) {
+        RedisUtils.zAdd(RedisKey.getKey(RedisKey.HOT_ROOM_LAST_MSG_KEY), roomId, lastMsgId);
     }
 }

@@ -24,6 +24,7 @@ import com.ershi.user.domain.entity.UserEntity;
 import com.ershi.user.domain.vo.UserLoginVO;
 import com.ershi.chat.websocket.event.UserOnlineEvent;
 import com.ershi.user.mapper.UserMapper;
+import com.ershi.user.service.cache.UserInfoCache;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -55,7 +56,7 @@ import static com.ershi.user.domain.entity.table.UserEntityTableDef.USER_ENTITY;
 public class ChatWebSocketServiceImpl implements ChatWebSocketService {
 
     @Resource
-    private UserMapper userMapper;
+    private UserInfoCache userInfoCache;
 
     @Resource
     private IMessageService messageService;
@@ -106,8 +107,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         }
 
         // 3. token有效 -> 获取当前登录用户信息
-        // todo 修改为缓存获取
-        UserEntity loginUser = userMapper.selectOneByQuery(QueryWrapper.create().where(USER_ENTITY.ID.eq(loginIdByToken)));
+        UserEntity loginUser = userInfoCache.get(loginIdByToken);
 
         // 3.1 用户上线，更新信息，发送事件
         UserLoginVO userLoginVO = online(channel, loginUser);

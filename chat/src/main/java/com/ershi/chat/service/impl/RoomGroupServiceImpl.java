@@ -59,7 +59,7 @@ public class RoomGroupServiceImpl extends ServiceImpl<RoomGroupMapper, RoomGroup
     public GroupCreateResp createRoomGroup(List<Long> uidList) {
         Long ownerUid = RequestHolder.get().getUid();
         // 无法仅与自己创建群聊
-        if (uidList.size() == 1 && Objects.equals(uidList.get(0), ownerUid)) {
+        if (uidList.size() == 1 && Objects.equals(uidList.getFirst(), ownerUid)) {
             throw new BusinessException(BusinessErrorEnum.API_PARAM_ERROR.getErrorCode(), "请选择其他群成员");
         }
 

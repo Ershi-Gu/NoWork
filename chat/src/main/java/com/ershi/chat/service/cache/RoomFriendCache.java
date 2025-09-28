@@ -4,11 +4,9 @@ import com.ershi.chat.domain.RoomFriendEntity;
 import com.ershi.chat.mapper.RoomFriendMapper;
 import com.ershi.common.cache.cache.AbstractRedisStringCache;
 import com.ershi.common.constants.RedisKey;
-import com.ershi.common.utils.RedisUtils;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +14,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.ershi.chat.domain.table.RoomFriendEntityTableDef.ROOM_FRIEND_ENTITY;
+import static com.ershi.chat.domain.table.RoomGroupEntityTableDef.ROOM_GROUP_ENTITY;
 
 /**
  * 单聊房间缓存
@@ -24,32 +23,27 @@ import static com.ershi.chat.domain.table.RoomFriendEntityTableDef.ROOM_FRIEND_E
  * @since 2025-09-18
  */
 @Component
-public class RoomFriendCache {
+public class RoomFriendCache extends AbstractRedisStringCache<Long, RoomFriendEntity> {
+
+    public static final long ROOM_FRIEND_EXPIRE_SECONDS = 5 * 60L;
 
     @Resource
     private RoomFriendMapper roomFriendMapper;
 
-    public static final long ROOM_FRIEND_EXPIRE_SECONDS = 5 * 60L;
-
-    /**
-     * 通过roomId获取RoomFriendEntity，旁路缓存模式
-     *
-     * @param roomId
-     * @return {@link RoomFriendEntity }
-     */
-    public RoomFriendEntity getRoomFriendByRoomId(Long roomId) {
-        RoomFriendEntity roomFriendEntity = RedisUtils.get(getKey(roomId), RoomFriendEntity.class);
-        if (roomFriendEntity != null) {
-            return roomFriendEntity;
-        }
-
-        roomFriendEntity = roomFriendMapper.selectOneByQuery(QueryWrapper.create()
-                .where(ROOM_FRIEND_ENTITY.ROOM_ID.eq(roomId)));
-        RedisUtils.set(getKey(roomId), roomFriendEntity, ROOM_FRIEND_EXPIRE_SECONDS);
-        return roomFriendEntity;
-    }
-
+    @Override
     protected String getKey(Long roomId) {
         return RedisKey.getKey(RedisKey.ROOM_FRIEND_KEY, roomId);
+    }
+
+    @Override
+    protected Long getExpireSeconds() {
+        return ROOM_FRIEND_EXPIRE_SECONDS;
+    }
+
+    @Override
+    protected Map<Long, RoomFriendEntity> load(List<Long> roomId) {
+        List<RoomFriendEntity> roomFriends = roomFriendMapper.selectListByQuery(QueryWrapper.create()
+                .where(ROOM_FRIEND_ENTITY.ROOM_ID.in(roomId)));
+        return roomFriends.stream().collect(Collectors.toMap(RoomFriendEntity::getRoomId, Function.identity()));
     }
 }

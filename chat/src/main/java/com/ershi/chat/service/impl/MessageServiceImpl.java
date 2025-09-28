@@ -10,7 +10,6 @@ import com.ershi.chat.domain.RoomFriendEntity;
 import com.ershi.chat.domain.RoomGroupEntity;
 import com.ershi.chat.domain.enums.RoomFriendStatusEnum;
 import com.ershi.chat.domain.message.MessageEntity;
-import com.ershi.chat.mapper.GroupMemberMapper;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.service.IMessageService;
 import com.ershi.chat.service.cache.*;
@@ -22,7 +21,6 @@ import com.ershi.common.manager.MQProducer;
 import com.ershi.common.manager.MsgIdManager;
 import com.ershi.common.utils.AssertUtil;
 import com.ershi.transaction.annotation.SecureInvoke;
-import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-
-import static com.ershi.chat.domain.table.GroupMemberEntityTableDef.GROUP_MEMBER_ENTITY;
 
 /**
  * 聊天室消息服务，主要负责权限检查/消息持久化/漫游消息等操作，发送相关任务由ChatWebSocketService负责
@@ -51,7 +47,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
     private RoomCache roomCache;
 
     @Resource
-    private RoomGroupByRoomIdCache roomGroupByRoomIdCache;
+    private RoomGroupCache roomGroupCache;
 
     @Resource
     private RoomFriendCache roomFriendCache;
@@ -98,7 +94,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
 
         if (roomEntity.isRoomFriend()) {
             // 单聊
-            RoomFriendEntity roomFriend = roomFriendCache.getRoomFriendByRoomId(chatMsgReq.getRoomId());
+            RoomFriendEntity roomFriend = roomFriendCache.get(chatMsgReq.getRoomId());
             // 房间状态检查
             AssertUtil.equal(RoomFriendStatusEnum.NORMAL.getStatus(), roomFriend.getStatus(), BusinessErrorEnum.FRIEND_BLACK_ERROR);
             // 用户状态检查
@@ -108,7 +104,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
         }
         else {
             // 群聊
-            RoomGroupEntity roomGroup = roomGroupByRoomIdCache.get(chatMsgReq.getRoomId());
+            RoomGroupEntity roomGroup = roomGroupCache.get(chatMsgReq.getRoomId());
             GroupMemberEntity groupMember = groupMemberCache.getByGroupIdAndUid(roomGroup.getId(), senderId);
 
             // 群成员状态检查

@@ -3,17 +3,18 @@ package com.ershi.chat.websocket.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
-import com.ershi.chat.domain.dto.MsgAckReq;
-import com.ershi.chat.domain.vo.ChatMessageResp;
+import com.ershi.chat.websocket.domain.dto.MsgAckReq;
 import com.ershi.chat.service.IMessageService;
 import com.ershi.chat.service.cache.MsgAckCache;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
+import com.ershi.chat.websocket.domain.dto.MsgReadReq;
 import com.ershi.chat.websocket.domain.dto.WSChannelExtraDTO;
 import com.ershi.chat.websocket.domain.enums.UserActiveTypeEnum;
 import com.ershi.chat.websocket.domain.enums.WSRespTypeEnum;
 import com.ershi.chat.websocket.domain.vo.CMReceiveAckResp;
 import com.ershi.chat.websocket.domain.vo.WSBaseResp;
 import com.ershi.chat.websocket.domain.vo.WSErrorResp;
+import com.ershi.chat.websocket.domain.vo.WSMsgReadResp;
 import com.ershi.chat.websocket.event.UserOfflineEvent;
 import com.ershi.chat.websocket.service.ChatWebSocketService;
 import com.ershi.chat.websocket.utils.NettyUtil;
@@ -23,9 +24,7 @@ import com.ershi.common.utils.AssertUtil;
 import com.ershi.user.domain.entity.UserEntity;
 import com.ershi.user.domain.vo.UserLoginVO;
 import com.ershi.chat.websocket.event.UserOnlineEvent;
-import com.ershi.user.mapper.UserMapper;
 import com.ershi.user.service.cache.UserInfoCache;
-import com.mybatisflex.core.query.QueryWrapper;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import jakarta.annotation.Resource;
@@ -42,8 +41,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
-
-import static com.ershi.user.domain.entity.table.UserEntityTableDef.USER_ENTITY;
 
 /**
  * 聊天室websocket业务服务
@@ -276,6 +273,29 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
 
         // 移除未ack记录
         msgAckCache.removeUnAckMsg(msgAckReq.getUid(), Collections.singletonList(msgAckReq.getMsgId()));
+
+        // todo 回复客户端
+    }
+
+    @Override
+    public void msgRead(Channel channel, String data) {
+        // 消息格式转换
+        MsgReadReq msgReadReq;
+        try {
+            msgReadReq = JSON.parseObject(data, MsgReadReq.class);
+        } catch (Exception e) {
+            throw new BusinessException(BusinessErrorEnum.MSG_FORMAT_ERROR.getErrorCode(), "MsgRead消息格式错误");
+        }
+        AssertUtil.isFalse(ObjectUtils.anyNull(msgReadReq.getUid(), msgReadReq.getRoomId(),
+                        msgReadReq.getMsgId()),
+                BusinessErrorEnum.MSG_FORMAT_ERROR, "MsgRead参数错误");
+
+        // 更新用户已读收件箱
+        messageService.msgRead(msgReadReq);
+
+        // 回复用户，操作已完成
+        sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.MSG_READ.getType(),
+                WSMsgReadResp.build(msgReadReq.getUid(), msgReadReq.getRoomId())));
     }
 
     /**

@@ -4,23 +4,23 @@ package com.ershi.chat.service.impl;
 import cn.hutool.extra.spring.SpringUtil;
 import com.ershi.chat.constants.MQConstant;
 import com.ershi.chat.constants.SystemMsgConstant;
-import com.ershi.chat.domain.GroupMemberEntity;
-import com.ershi.chat.domain.RoomEntity;
-import com.ershi.chat.domain.RoomFriendEntity;
-import com.ershi.chat.domain.RoomGroupEntity;
+import com.ershi.chat.domain.*;
 import com.ershi.chat.domain.enums.RoomFriendStatusEnum;
 import com.ershi.chat.domain.message.MessageEntity;
 import com.ershi.chat.mapper.MessageMapper;
+import com.ershi.chat.mapper.UserMsgInboxMapper;
 import com.ershi.chat.service.IMessageService;
 import com.ershi.chat.service.cache.*;
 import com.ershi.chat.service.handler.message.AbstractMsgHandler;
 import com.ershi.chat.service.handler.message.MsgHandlerFactory;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
+import com.ershi.chat.websocket.domain.dto.MsgReadReq;
 import com.ershi.common.exception.BusinessErrorEnum;
 import com.ershi.common.manager.MQProducer;
 import com.ershi.common.manager.MsgIdManager;
 import com.ershi.common.utils.AssertUtil;
 import com.ershi.transaction.annotation.SecureInvoke;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+import static com.ershi.chat.domain.table.UserMsgInboxEntityTableDef.USER_MSG_INBOX_ENTITY;
 
 /**
  * 聊天室消息服务，主要负责权限检查/消息持久化/漫游消息等操作，发送相关任务由ChatWebSocketService负责
@@ -57,6 +59,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
 
     @Resource
     private MQProducer mqProducer;
+
+    @Resource
+    private UserMsgInboxMapper userMsgInboxMapper;
 
     @Transactional
     @Override
@@ -101,8 +106,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
             AssertUtil.isTrue(senderId.equals(roomFriend.getUid1()) ||
                     senderId.equals(roomFriend.getUid2()), BusinessErrorEnum.FRIEND_NOT_EXIST_ERROR);
 
-        }
-        else {
+        } else {
             // 群聊
             RoomGroupEntity roomGroup = roomGroupCache.get(chatMsgReq.getRoomId());
             GroupMemberEntity groupMember = groupMemberCache.getByGroupIdAndUid(roomGroup.getId(), senderId);
@@ -125,5 +129,18 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
     public Long saveMessage(MessageEntity messageEntity) {
         this.save(messageEntity);
         return messageEntity.getId();
+    }
+
+    @Override
+    public void msgRead(MsgReadReq msgReadReq) {
+        // 更新用户收件箱中的已读游标
+        UserMsgInboxEntity record = userMsgInboxMapper.selectOneByQuery(QueryWrapper.create()
+                .where(USER_MSG_INBOX_ENTITY.ROOM_ID.eq(msgReadReq.getRoomId()))
+                .and(USER_MSG_INBOX_ENTITY.UID.eq(msgReadReq.getUid())));
+        AssertUtil.nonNull(record, BusinessErrorEnum.USER_MSG_INBOX_ERROR);
+
+        record.setReadMsgId(msgReadReq.getMsgId());
+        record.setReadTime(LocalDateTime.now());
+        userMsgInboxMapper.update(record);
     }
 }

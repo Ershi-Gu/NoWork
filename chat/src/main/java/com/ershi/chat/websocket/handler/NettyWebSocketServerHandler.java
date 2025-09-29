@@ -1,9 +1,6 @@
 package com.ershi.chat.websocket.handler;
 
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson2.JSON;
-import com.ershi.chat.domain.dto.MsgAckReq;
-import com.ershi.chat.service.IMessageService;
 import com.ershi.chat.websocket.domain.dto.WSBaseReq;
 import com.ershi.chat.websocket.domain.enums.WSReqTypeEnum;
 import com.ershi.chat.websocket.service.ChatWebSocketService;
@@ -16,7 +13,6 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * @author Ershi-Gu.
@@ -106,6 +102,9 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
             case MSG_RECEIVE_ACK:
                 chatWebSocketService.confirmMsgAck(wsBaseReq.getData());
                 break;
+            // 消息已读标记
+            case MSG_READ:
+                chatWebSocketService.msgRead(ctx.channel(), wsBaseReq.getData());
         }
     }
 }

@@ -1,11 +1,10 @@
 package com.ershi.chat.service;
 
 
-import com.ershi.chat.domain.dto.MsgAckReq;
 import com.ershi.chat.domain.message.MessageEntity;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
+import com.ershi.chat.websocket.domain.dto.MsgReadReq;
 import com.mybatisflex.core.service.IService;
-import io.netty.channel.Channel;
 
 /**
  * 消息表 服务层。
@@ -30,4 +29,11 @@ public interface IMessageService extends IService<MessageEntity> {
      * @return {@link Long }
      */
     Long saveMessage(MessageEntity messageEntity);
+
+    /**
+     * 确认消息已读
+     *
+     * @param msgReadReq
+     */
+    void msgRead(MsgReadReq msgReadReq);
 }

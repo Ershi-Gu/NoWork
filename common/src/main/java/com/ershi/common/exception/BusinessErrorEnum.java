@@ -28,6 +28,7 @@ public enum BusinessErrorEnum implements ErrorEnum {
     FRIEND_BLACK_ERROR(19984, "已被好友拉黑"),
     FRIEND_NOT_EXIST_ERROR(19983, "好友不存在"),
     MEMBER_NOT_EXIST_ERROR(19982, "群成员不存在"),
+    USER_MSG_INBOX_ERROR(19981, "用户收件箱数据异常，更新失败")
     ;
 
     private final Integer errorCode;

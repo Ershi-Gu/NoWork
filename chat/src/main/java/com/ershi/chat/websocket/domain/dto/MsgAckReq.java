@@ -1,4 +1,4 @@
-package com.ershi.chat.domain.dto;
+package com.ershi.chat.websocket.domain.dto;
 
 import lombok.Data;
 

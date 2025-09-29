@@ -79,9 +79,9 @@ public class RedisKey {
     public static final String ROOM_GROUP_BY_ROOM_ID_KEY = "roomGroup:roomId_%d";
 
     /**
-     * 热点会话活跃时间
+     * 热点会话最后消息id，用于会话排序
      */
-    public static final String HOT_ROOM_ACTIVE_TIME_KEY = "hotRoomActiveTime";
+    public static final String HOT_ROOM_LAST_MSG_KEY = "hotRoomLastMsgId";
 
     /**
      * 全局唯一自增消息id
@@ -97,6 +97,11 @@ public class RedisKey {
      * 消息简表，用于未ack情况下的重试等策略
      */
     public static final String MSG_INFO_KEY = "msg:id_%d";
+
+    /**
+     * 记录用户已读热点会话消息
+     */
+    public static final String USER_READ_HOT_MSG_KEY = "userReadHotMsg:uid_%d";
 
     /**
      * 获取key

@@ -67,6 +67,7 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
         List<Long> receiverUids = getReceiverUids(roomEntity, messageEntity);
 
         // 更新收件箱
+        // todo fix修复bug，未更新发件人本身收件箱
         refreshReceiveBox(roomEntity, messageEntity, receiverUids);
 
         // 确定推送范围 -> 过滤不在线用户
@@ -99,7 +100,7 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
 
         if (roomEntity.isRoomFriend()) {
             // 单聊
-            RoomFriendEntity roomFriendEntity = roomFriendCache.getRoomFriendByRoomId(roomEntity.getId());
+            RoomFriendEntity roomFriendEntity = roomFriendCache.get(roomEntity.getId());
             Long senderId = messageEntity.getSenderId();
             receiverUids.add(roomFriendEntity.getUid1().equals(senderId)
                     ? roomFriendEntity.getUid2()
@@ -136,8 +137,12 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
      * @param memberUidList
      */
     private void refreshReceiveBox(RoomEntity roomEntity,
-                                   MessageEntity messageEntity, List<Long> memberUidList) {
+                                   MessageEntity messageEntity,
+                                   List<Long> memberUidList) {
         boolean isHot = roomEntity.isHotRoom();
+
+        // 防止修改原list
+        List<Long> pendingReceiveBoxUids = new ArrayList<>(memberUidList);
 
         // 刷新会话最后活跃时间和最后消息记录
         roomEntity.setActiveTime(messageEntity.getCreateTime());
@@ -145,11 +150,12 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
         roomMapper.update(roomEntity);
 
         if (isHot) {
-            // 热点会话-额外使用redis存储会话更新时间，聚合时只需要从redis获取即可
-            hotRoomCache.refreshActiveTime(roomEntity.getId(), messageEntity.getCreateTime());
+            // 热点会话-使用redis存储最新消息id，聚合时只需要从redis获取即可
+            hotRoomCache.refreshLastMsgId(roomEntity.getId(), messageEntity.getId());
         } else {
-            // 非热点会话-更新用户收件箱
-            userMsgInboxMapper.refreshInBox(memberUidList, roomEntity.getId(),
+            // 非热点会话-更新用户收件箱，同时需要更新发送人收件箱
+            pendingReceiveBoxUids.add(messageEntity.getSenderId());
+            userMsgInboxMapper.refreshInBox(pendingReceiveBoxUids, roomEntity.getId(),
                     messageEntity.getId(), messageEntity.getCreateTime());
         }
     }

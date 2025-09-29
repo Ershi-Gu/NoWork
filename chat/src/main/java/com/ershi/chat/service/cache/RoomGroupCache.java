@@ -16,12 +16,13 @@ import java.util.stream.Collectors;
 import static com.ershi.chat.domain.table.RoomGroupEntityTableDef.ROOM_GROUP_ENTITY;
 
 /**
+ * 根据RoomId获取RoomGroup的批量缓存
  *
  * @author Ershi-Gu.
  * @since 2025-09-18
  */
 @Service
-public class RoomGroupByRoomIdCache extends AbstractRedisStringCache<Long, RoomGroupEntity> {
+public class RoomGroupCache extends AbstractRedisStringCache<Long, RoomGroupEntity> {
 
     @Resource
     private RoomGroupMapper roomGroupMapper;

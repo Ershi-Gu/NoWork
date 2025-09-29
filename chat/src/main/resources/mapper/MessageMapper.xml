@@ -16,4 +16,18 @@
     <sql id="Base_Column_List">
         `id`, `room_id`, `sender_id`, `type`, `extra`, `create_time`, `update_time`, `is_delete`
     </sql>
+
+    <select id="countUnreadMsg" resultType="com.ershi.chat.domain.dto.C10nUnreadCount">
+        <foreach collection="unReadMsgCountReqs" item="req" separator="UNION ALL">
+            SELECT
+            #{req.roomId} AS roomId,
+            COUNT(*) AS unreadCount
+            FROM message
+            WHERE room_id = #{req.roomId}
+            <if test="req.readMsgId != null">
+                AND id > #{req.readMsgId}
+            </if>
+            <![CDATA[ AND id <= #{req.lastMsgId} ]]>
+        </foreach>
+    </select>
 </mapper>

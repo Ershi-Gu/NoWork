@@ -95,9 +95,11 @@ public class CursorUtils {
         // 设置游标条件
         if (StrUtil.isNotBlank(request.getCursor())) {
             if (order) {
-                wrapper.lt(cursorColumn, parseCursor(request.getCursor(), cursorType));
-            } else {
+                // 升序
                 wrapper.gt(cursorColumn, parseCursor(request.getCursor(), cursorType));
+            } else {
+                // 降序
+                wrapper.lt(cursorColumn, parseCursor(request.getCursor(), cursorType));
             }
         }
 

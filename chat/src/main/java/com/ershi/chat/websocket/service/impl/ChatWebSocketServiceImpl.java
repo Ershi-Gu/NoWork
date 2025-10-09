@@ -15,6 +15,7 @@ import com.ershi.chat.websocket.domain.vo.CMReceiveAckResp;
 import com.ershi.chat.websocket.domain.vo.WSBaseResp;
 import com.ershi.chat.websocket.domain.vo.WSErrorResp;
 import com.ershi.chat.websocket.domain.vo.WSMsgReadResp;
+import com.ershi.chat.websocket.domain.vo.WSMsgAckResp;
 import com.ershi.chat.websocket.event.UserOfflineEvent;
 import com.ershi.chat.websocket.service.ChatWebSocketService;
 import com.ershi.chat.websocket.utils.NettyUtil;
@@ -260,7 +261,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
     }
 
     @Override
-    public void confirmMsgAck(String data) {
+    public void confirmMsgAck(Channel channel, String data) {
         // 消息格式转换
         MsgAckReq msgAckReq;
         try {
@@ -274,7 +275,9 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         // 移除未ack记录
         msgAckCache.removeUnAckMsg(msgAckReq.getUid(), Collections.singletonList(msgAckReq.getMsgId()));
 
-        // todo 回复客户端
+        // 回复客户端ack处理完成
+        sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.MSG_ACK.getType(),
+                WSMsgAckResp.build(msgAckReq.getUid(), msgAckReq.getMsgId())));
     }
 
     @Override

@@ -22,7 +22,8 @@ public enum WSRespTypeEnum {
     MSG_RECEIVE_ACK(2, "服务端接收聊天消息确认"),
     SEND_CHAT_MESSAGE(3, "发送聊天室消息"),
     APPLY_FRIEND(4, "好友申请"),
-    MSG_READ(5, "消息已读游标更新"),
+    MSG_ACK(5, "消息ack操作完成"),
+    MSG_READ(6, "消息已读游标更新"),
     ;
 
     /**

@@ -71,7 +71,7 @@ public interface ChatWebSocketService {
      *
      * @param data
      */
-    void confirmMsgAck(String data);
+    void confirmMsgAck(Channel channel, String data);
 
     /**
      * 消息已读标记

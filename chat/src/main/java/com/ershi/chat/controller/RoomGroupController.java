@@ -11,6 +11,8 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 群聊房间表 控制层。
  *
@@ -37,7 +39,12 @@ public class RoomGroupController {
         return ApiResult.success(roomGroupService.getGroupInfo(roomId));
     }
 
-    // todo @Operation(summary = "获取群成员列表")
+    @Operation(summary = "获取群成员uid列表")
+    @GetMapping("/members")
+    public ApiResult<List<Long>> getMemberUidList(@RequestParam Long roomId) {
+        return ApiResult.success(roomGroupService.getMemberUidList(roomId));
+
+    }
 
     // todo @Operation(summary = "申请入群")
 

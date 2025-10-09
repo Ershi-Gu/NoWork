@@ -2,6 +2,8 @@ package com.ershi.chat.service.cache;
 
 import com.ershi.chat.domain.dto.HotC10nReadRecord;
 import com.ershi.common.constants.RedisKey;
+import com.ershi.common.exception.BusinessErrorEnum;
+import com.ershi.common.exception.BusinessException;
 import com.ershi.common.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,9 +37,8 @@ public class HotMsgReadCache {
 
         // 防止游标往回更新
         if (record != null && msgId.compareTo(Long.valueOf(record.toString())) < 0) {
-            log.error("请求更新已读消息游标：{} 小于已存在游标：{}，参数错误，用户已读游标更新失败",
-                    msgId, record);
-            return false;
+            throw new BusinessException(BusinessErrorEnum.API_PARAM_ERROR.getErrorCode(),
+                    String.format("请求更新已读消息游标：{%s} 小于已存在游标：{%s}，参数错误，用户已读游标更新失败", msgId, record));
         }
 
         RedisUtils.hmset(getKey(uid), Map.of(String.valueOf(roomId), msgId));

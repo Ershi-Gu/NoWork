@@ -31,4 +31,12 @@ public interface IRoomGroupService extends IService<RoomGroupEntity> {
      * @return {@link GroupInfoResp }
      */
     GroupInfoResp getGroupInfo(Long roomId);
+
+    /**
+     * 获取群成员uid列表
+     *
+     * @param roomId
+     * @return {@link List }<{@link Long }>
+     */
+    List<Long> getMemberUidList(Long roomId);
 }

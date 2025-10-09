@@ -27,10 +27,12 @@ import com.ershi.user.domain.entity.UserEntity;
 import com.ershi.user.service.IUserService;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +46,7 @@ import java.util.stream.Stream;
  * @author mybatis-flex-helper automatic generation
  * @since 1.0
  */
+@Slf4j
 @Service
 public class RoomGroupServiceImpl extends ServiceImpl<RoomGroupMapper, RoomGroupEntity> implements IRoomGroupService {
 
@@ -137,5 +140,18 @@ public class RoomGroupServiceImpl extends ServiceImpl<RoomGroupMapper, RoomGroup
                 .avatar(roomGroup.getAvatarUrl())
                 .role(member.getRole())
                 .build();
+    }
+
+    @Override
+    public List<Long> getMemberUidList(Long roomId) {
+        // 获取群成员uid列表
+        List<Long> memberUidList = groupMemberCacheV2.getMemberUidList(roomId);
+
+        if (memberUidList == null) {
+            log.error("会话：{}，不存在群成员", roomId);
+            return Collections.emptyList();
+        }
+
+        return memberUidList;
     }
 }

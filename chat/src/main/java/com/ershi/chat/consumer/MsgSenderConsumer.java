@@ -67,7 +67,6 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
         List<Long> receiverUids = getReceiverUids(roomEntity, messageEntity);
 
         // 更新收件箱
-        // todo fix修复bug，未更新发件人本身收件箱
         refreshReceiveBox(roomEntity, messageEntity, receiverUids);
 
         // 确定推送范围 -> 过滤不在线用户

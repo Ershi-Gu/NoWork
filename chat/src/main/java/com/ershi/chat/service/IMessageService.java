@@ -35,5 +35,5 @@ public interface IMessageService extends IService<MessageEntity> {
      *
      * @param msgReadReq
      */
-    void msgRead(MsgReadReq msgReadReq);
+    boolean msgRead(MsgReadReq msgReadReq);
 }

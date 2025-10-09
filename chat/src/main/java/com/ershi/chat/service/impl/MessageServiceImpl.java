@@ -132,15 +132,24 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
     }
 
     @Override
-    public void msgRead(MsgReadReq msgReadReq) {
+    public boolean msgRead(MsgReadReq msgReadReq) {
         // 更新用户收件箱中的已读游标
         UserMsgInboxEntity record = userMsgInboxMapper.selectOneByQuery(QueryWrapper.create()
                 .where(USER_MSG_INBOX_ENTITY.ROOM_ID.eq(msgReadReq.getRoomId()))
                 .and(USER_MSG_INBOX_ENTITY.UID.eq(msgReadReq.getUid())));
         AssertUtil.nonNull(record, BusinessErrorEnum.USER_MSG_INBOX_ERROR);
 
+        // 防止游标往回更新
+        if (record.getReadMsgId() <= msgReadReq.getMsgId()) {
+            log.error("请求更新已读消息游标：{} 小于已存在游标：{}，参数错误，用户已读游标更新失败",
+                    msgReadReq.getMsgId(), record.getReadMsgId());
+            return false;
+        }
+
         record.setReadMsgId(msgReadReq.getMsgId());
         record.setReadTime(LocalDateTime.now());
         userMsgInboxMapper.update(record);
+
+        return true;
     }
 }

@@ -6,6 +6,9 @@ import com.alibaba.fastjson2.JSON;
 import com.ershi.chat.websocket.domain.dto.MsgAckReq;
 import com.ershi.chat.service.IMessageService;
 import com.ershi.chat.service.cache.MsgAckCache;
+import com.ershi.chat.service.cache.RoomCache;
+import com.ershi.chat.service.cache.HotMsgReadCache;
+import com.ershi.chat.domain.RoomEntity;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
 import com.ershi.chat.websocket.domain.dto.MsgReadReq;
 import com.ershi.chat.websocket.domain.dto.WSChannelExtraDTO;
@@ -61,6 +64,12 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
 
     @Resource
     private MsgAckCache msgAckCache;
+
+    @Resource
+    private RoomCache roomCache;
+
+    @Resource
+    private HotMsgReadCache hotMsgReadCache;
 
     @Resource
     private Executor websocketVirtualExecutor;
@@ -293,8 +302,22 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
                         msgReadReq.getMsgId()),
                 BusinessErrorEnum.MSG_FORMAT_ERROR, "MsgRead参数错误");
 
-        // 更新用户已读收件箱
-        messageService.msgRead(msgReadReq);
+        // 获取房间信息判断是否是热点会话
+        RoomEntity room = roomCache.get(msgReadReq.getRoomId());
+
+        boolean res = false;
+        if (room.isHotRoom()) {
+            // 热点会话：在redis中记录用户已读游标
+            res = hotMsgReadCache.userReadMsg(msgReadReq.getUid(), msgReadReq.getRoomId(), msgReadReq.getMsgId());
+        } else {
+            // 非热点会话：直接更新用户收件箱
+            res = messageService.msgRead(msgReadReq);
+        }
+
+        // 游标更新失败，直接返回
+        if (!res) {
+            return;
+        }
 
         // 回复用户，操作已完成
         sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.MSG_READ.getType(),

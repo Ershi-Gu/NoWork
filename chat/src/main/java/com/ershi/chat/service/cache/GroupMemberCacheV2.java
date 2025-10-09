@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.ershi.chat.domain.GroupMemberEntity;
 import com.ershi.chat.mapper.GroupMemberMapper;
 import com.ershi.common.constants.RedisKey;
+import com.ershi.common.utils.JsonUtils;
 import com.ershi.common.utils.RedisUtils;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class GroupMemberCacheV2 {
             return Collections.emptyList();
         }
         
-        // 将成员列表写入Hash缓存，uid作为field，实体作为value
+        // 将成员列表写入Hash缓存，uid作为field，实体转为json字符串作为value
         String cacheKey = buildRoomKey(roomId);
         Map<String, Object> cacheData = memberList.stream()
                 .collect(Collectors.toMap(
@@ -118,7 +119,7 @@ public class GroupMemberCacheV2 {
         Object cachedMember = RedisUtils.hget(cacheKey, field);
         if (cachedMember != null) {
             RedisUtils.expire(cacheKey, GROUP_MEMBER_EXPIRE_SECONDS);
-            return (GroupMemberEntity) cachedMember;
+            return JsonUtils.toObj(cachedMember.toString(), GroupMemberEntity.class);
         }
         
         // 缓存未命中，从数据库加载并缓存整个群的成员列表

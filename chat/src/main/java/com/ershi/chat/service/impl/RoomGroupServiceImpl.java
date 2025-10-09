@@ -10,13 +10,18 @@ import com.ershi.chat.domain.enums.GroupMemberRoleEnum;
 import com.ershi.chat.domain.enums.RoomHotFlagEnum;
 import com.ershi.chat.domain.enums.RoomTypeEnum;
 import com.ershi.chat.domain.vo.GroupCreateResp;
+import com.ershi.chat.domain.vo.GroupInfoResp;
 import com.ershi.chat.event.CreateRoomGroupEvent;
 import com.ershi.chat.mapper.RoomGroupMapper;
 import com.ershi.chat.service.IGroupMemberService;
 import com.ershi.chat.service.IRoomGroupService;
 import com.ershi.chat.service.IRoomService;
+import com.ershi.chat.service.cache.GroupMemberCacheV2;
+import com.ershi.chat.service.cache.RoomCache;
+import com.ershi.chat.service.cache.RoomGroupCache;
 import com.ershi.common.exception.BusinessErrorEnum;
 import com.ershi.common.exception.BusinessException;
+import com.ershi.common.utils.AssertUtil;
 import com.ershi.common.utils.RequestHolder;
 import com.ershi.user.domain.entity.UserEntity;
 import com.ershi.user.service.IUserService;
@@ -53,6 +58,15 @@ public class RoomGroupServiceImpl extends ServiceImpl<RoomGroupMapper, RoomGroup
 
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
+
+    @Resource
+    private RoomCache roomCache;
+
+    @Resource
+    private RoomGroupCache roomGroupCache;
+
+    @Resource
+    private GroupMemberCacheV2 groupMemberCacheV2;
 
     @Override
     @Transactional
@@ -101,6 +115,27 @@ public class RoomGroupServiceImpl extends ServiceImpl<RoomGroupMapper, RoomGroup
                 .roomId(roomGroupEntity.getRoomId())
                 .name(roomGroupEntity.getName())
                 .avatarUrl(roomGroupEntity.getAvatarUrl())
+                .build();
+    }
+
+    @Override
+    public GroupInfoResp getGroupInfo(Long roomId) {
+        Long uid = RequestHolder.get().getUid();
+
+        // 从缓存获取群聊信息
+        RoomGroupEntity roomGroup = roomGroupCache.get(roomId);
+        AssertUtil.nonNull(roomGroup, BusinessErrorEnum.ROOM_NOT_EXIST_ERROR);
+        
+        // 从缓存获取当前用户在群组中的成员信息
+        GroupMemberEntity member = groupMemberCacheV2.getMemberInfo(roomId, uid);
+        AssertUtil.nonNull(member, BusinessErrorEnum.MEMBER_NOT_EXIST_ERROR);
+        
+        // 构建并返回群聊信息
+        return GroupInfoResp.builder()
+                .roomId(roomId)
+                .groupName(roomGroup.getName())
+                .avatar(roomGroup.getAvatarUrl())
+                .role(member.getRole())
                 .build();
     }
 }

@@ -3,9 +3,8 @@ package com.ershi.chat.service;
 
 import com.ershi.chat.domain.RoomGroupEntity;
 import com.ershi.chat.domain.vo.GroupCreateResp;
+import com.ershi.chat.domain.vo.GroupInfoResp;
 import com.mybatisflex.core.service.IService;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -24,4 +23,12 @@ public interface IRoomGroupService extends IService<RoomGroupEntity> {
      * @return {@link GroupCreateResp }
      */
     GroupCreateResp createRoomGroup(List<Long> uidList);
+
+    /**
+     * 获取群聊信息
+     *
+     * @param roomId
+     * @return {@link GroupInfoResp }
+     */
+    GroupInfoResp getGroupInfo(Long roomId);
 }

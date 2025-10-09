@@ -57,7 +57,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
     private RoomFriendCache roomFriendCache;
 
     @Resource
-    private GroupMemberCacheV2 groupMemberCache;
+    private GroupMemberCacheV2 groupMemberCacheV2;
 
     @Resource
     private MQProducer mqProducer;
@@ -110,7 +110,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
 
         } else {
             // 获取用户在该群聊的群成员信息
-            GroupMemberEntity groupMember = groupMemberCache.getMemberInfo(roomEntity.getId(), senderId);
+            GroupMemberEntity groupMember = groupMemberCacheV2.getMemberInfo(roomEntity.getId(), senderId);
 
             // 群成员状态检查
             if (!Objects.equals(senderId, SystemMsgConstant.SENDER_ID)) {

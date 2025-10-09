@@ -2,16 +2,14 @@ package com.ershi.chat.controller;
 
 import com.ershi.chat.domain.dto.GroupCreateReq;
 import com.ershi.chat.domain.vo.GroupCreateResp;
+import com.ershi.chat.domain.vo.GroupInfoResp;
 import com.ershi.chat.service.IRoomGroupService;
 import com.ershi.common.domain.vo.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 群聊房间表 控制层。
@@ -32,4 +30,22 @@ public class RoomGroupController {
     public ApiResult<GroupCreateResp> createRoomGroup(@Validated @RequestBody GroupCreateReq groupCreateReq) {
         return ApiResult.success(roomGroupService.createRoomGroup(groupCreateReq.getUidList()));
     }
+
+    @Operation(summary = "获取群聊基本信息")
+    @GetMapping("/info")
+    public ApiResult<GroupInfoResp> getGroupInfo(@RequestParam Long roomId) {
+        return ApiResult.success(roomGroupService.getGroupInfo(roomId));
+    }
+
+    // todo @Operation(summary = "获取群成员列表")
+
+    // todo @Operation(summary = "申请入群")
+
+    // todo @Operation(summary = "退出群聊")
+
+    // todo @Operation(summary = "邀请好友入群")
+
+    // todo @Operation(summary = "添加管理员")
+
+    // todo @Operation(summary = "分享群聊")
 }

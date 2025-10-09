@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 /**
  * Redis 工具类
+ *
  * @author Ershi
  * @date 2024/11/29
  */
@@ -358,7 +359,14 @@ public class RedisUtils {
      */
     public static Boolean hmset(String key, Map<String, Object> map) {
         try {
-            stringRedisTemplate.opsForHash().putAll(key, map);
+            // 将 map 的 value 转为字符串（通过 objToStr 方法）
+            Map<String, String> stringMap = map.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> objToStr(entry.getValue())
+                    ));
+
+            stringRedisTemplate.opsForHash().putAll(key, stringMap);
             return true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -376,7 +384,14 @@ public class RedisUtils {
      */
     public static Boolean hmset(String key, Map<String, Object> map, long time) {
         try {
-            stringRedisTemplate.opsForHash().putAll(key, map);
+            // 将 map 的 value 转为字符串（通过 objToStr 方法）
+            Map<String, String> stringMap = map.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> objToStr(entry.getValue())
+                    ));
+
+            stringRedisTemplate.opsForHash().putAll(key, stringMap);
             if (time > 0) {
                 expire(key, time);
             }

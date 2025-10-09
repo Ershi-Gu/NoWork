@@ -41,7 +41,7 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
     private RoomFriendCache roomFriendCache;
 
     @Resource
-    private GroupMemberCache groupMemberCache;
+    private GroupMemberCacheV2 groupMemberCache;
 
     @Resource
     private HotRoomCache hotRoomCache;
@@ -106,7 +106,7 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
                     : roomFriendEntity.getUid1());
         } else {
             // 群聊
-            receiverUids = groupMemberCache.getRoomMemberUidList(roomEntity.getId());
+            receiverUids = groupMemberCache.getMemberUidList(roomEntity.getId());
         }
 
         return receiverUids;

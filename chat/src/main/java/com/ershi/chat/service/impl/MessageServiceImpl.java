@@ -4,13 +4,18 @@ package com.ershi.chat.service.impl;
 import cn.hutool.extra.spring.SpringUtil;
 import com.ershi.chat.constants.MQConstant;
 import com.ershi.chat.constants.SystemMsgConstant;
-import com.ershi.chat.domain.*;
+import com.ershi.chat.domain.GroupMemberEntity;
+import com.ershi.chat.domain.RoomEntity;
+import com.ershi.chat.domain.RoomFriendEntity;
+import com.ershi.chat.domain.UserMsgInboxEntity;
 import com.ershi.chat.domain.enums.RoomFriendStatusEnum;
 import com.ershi.chat.domain.message.MessageEntity;
 import com.ershi.chat.mapper.MessageMapper;
 import com.ershi.chat.mapper.UserMsgInboxMapper;
 import com.ershi.chat.service.IMessageService;
-import com.ershi.chat.service.cache.*;
+import com.ershi.chat.service.cache.GroupMemberCacheV2;
+import com.ershi.chat.service.cache.RoomCache;
+import com.ershi.chat.service.cache.RoomFriendCache;
 import com.ershi.chat.service.handler.message.AbstractMsgHandler;
 import com.ershi.chat.service.handler.message.MsgHandlerFactory;
 import com.ershi.chat.websocket.domain.dto.ChatMsgReq;
@@ -49,13 +54,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
     private RoomCache roomCache;
 
     @Resource
-    private RoomGroupCache roomGroupCache;
-
-    @Resource
     private RoomFriendCache roomFriendCache;
 
     @Resource
-    private GroupMemberCache groupMemberCache;
+    private GroupMemberCacheV2 groupMemberCache;
 
     @Resource
     private MQProducer mqProducer;
@@ -98,18 +100,17 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
         AssertUtil.nonNull(roomEntity, BusinessErrorEnum.ROOM_NOT_EXIST_ERROR);
 
         if (roomEntity.isRoomFriend()) {
-            // 单聊
+            // 获取单聊会话信息
             RoomFriendEntity roomFriend = roomFriendCache.get(chatMsgReq.getRoomId());
-            // 房间状态检查
+            // 会话状态检查
             AssertUtil.equal(RoomFriendStatusEnum.NORMAL.getStatus(), roomFriend.getStatus(), BusinessErrorEnum.FRIEND_BLACK_ERROR);
             // 用户状态检查
             AssertUtil.isTrue(senderId.equals(roomFriend.getUid1()) ||
                     senderId.equals(roomFriend.getUid2()), BusinessErrorEnum.FRIEND_NOT_EXIST_ERROR);
 
         } else {
-            // 群聊
-            RoomGroupEntity roomGroup = roomGroupCache.get(chatMsgReq.getRoomId());
-            GroupMemberEntity groupMember = groupMemberCache.getByGroupIdAndUid(roomGroup.getId(), senderId);
+            // 获取用户在该群聊的群成员信息
+            GroupMemberEntity groupMember = groupMemberCache.getMemberInfo(roomEntity.getId(), senderId);
 
             // 群成员状态检查
             if (!Objects.equals(senderId, SystemMsgConstant.SENDER_ID)) {

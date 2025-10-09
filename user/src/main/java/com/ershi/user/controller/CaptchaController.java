@@ -4,10 +4,10 @@ import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.anji.captcha.util.StringUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +27,7 @@ public class CaptchaController {
     @Resource
     private CaptchaService captchaService;
 
+    @Operation(summary = "获取验证码")
     @PostMapping("/get")
     public ResponseModel get(@RequestBody CaptchaVO data, HttpServletRequest request) {
         assert request.getRemoteHost() != null;
@@ -34,6 +35,7 @@ public class CaptchaController {
         return captchaService.get(data);
     }
 
+    @Operation(summary = "验证码校验")
     @PostMapping("/check")
     public ResponseModel check(@RequestBody CaptchaVO data, HttpServletRequest request) {
         data.setBrowserInfo(getRemoteId(request));

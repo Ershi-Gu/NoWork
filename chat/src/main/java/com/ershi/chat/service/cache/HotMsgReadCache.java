@@ -29,7 +29,6 @@ public class HotMsgReadCache {
      * @param roomId
      * @param msgId
      */
-    // todo 热点会话用户已读待开发
     public boolean userReadMsg(Long uid, Long roomId, Long msgId) {
         // 获取已存在游标
         Object record = RedisUtils.hget(getKey(uid), String.valueOf(roomId));

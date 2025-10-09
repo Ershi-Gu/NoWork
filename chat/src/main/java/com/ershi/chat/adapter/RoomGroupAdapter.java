@@ -25,7 +25,7 @@ public class RoomGroupAdapter {
                 .roomId(roomEntity.getId())
                 // 加一个3位随机整数
                 .name(leader.getName() + "的群聊_" + (int) (Math.random() * 1000))
-                // 默认头像
+                // 群聊默认头像
                 .avatarUrl(GroupAvatarConstant.DEFAULT_AVATAR_URL)
                 .build();
     }

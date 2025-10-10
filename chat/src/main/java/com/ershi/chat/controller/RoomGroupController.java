@@ -1,6 +1,7 @@
 package com.ershi.chat.controller;
 
 import com.ershi.chat.domain.dto.GroupCreateReq;
+import com.ershi.chat.domain.dto.GroupInviteReq;
 import com.ershi.chat.domain.vo.GroupCreateResp;
 import com.ershi.chat.domain.vo.GroupInfoResp;
 import com.ershi.chat.service.IRoomGroupService;
@@ -52,7 +53,12 @@ public class RoomGroupController {
         return ApiResult.success();
     }
 
-    // todo @Operation(summary = "邀请好友入群")
+    @Operation(summary = "邀请好友入群")
+    @PostMapping("/invite")
+    public ApiResult<Void> inviteFriendToGroup(@Validated @RequestBody GroupInviteReq groupInviteReq) {
+        roomGroupService.inviteFriendToGroup(groupInviteReq.getRoomId(), groupInviteReq.getFriendUidList());
+        return ApiResult.success();
+    }
 
     // todo @Operation(summary = "添加管理员")
 

@@ -26,4 +26,13 @@ public interface IRoomFriendService extends IService<RoomFriendEntity> {
      * @param roomFriendEntity
      */
     void recoverRoomFriend(RoomFriendEntity roomFriendEntity);
+
+    /**
+     * 获取单聊房间（好友间）
+     *
+     * @param uid1 用户1的uid
+     * @param uid2 用户2的uid
+     * @return {@link RoomFriendEntity }
+     */
+    RoomFriendEntity getRoomFriend(Long uid1, Long uid2);
 }

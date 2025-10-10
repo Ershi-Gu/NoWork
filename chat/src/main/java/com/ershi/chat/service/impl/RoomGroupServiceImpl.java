@@ -3,19 +3,20 @@ package com.ershi.chat.service.impl;
 
 import com.ershi.chat.adapter.GroupMemberAdapter;
 import com.ershi.chat.adapter.RoomGroupAdapter;
+import com.ershi.chat.domain.GroupInviteEntity;
 import com.ershi.chat.domain.GroupMemberEntity;
 import com.ershi.chat.domain.RoomEntity;
 import com.ershi.chat.domain.RoomGroupEntity;
+import com.ershi.chat.domain.enums.GroupInviteStatusEnum;
 import com.ershi.chat.domain.enums.GroupMemberRoleEnum;
 import com.ershi.chat.domain.enums.RoomHotFlagEnum;
 import com.ershi.chat.domain.enums.RoomTypeEnum;
 import com.ershi.chat.domain.vo.GroupCreateResp;
 import com.ershi.chat.domain.vo.GroupInfoResp;
 import com.ershi.chat.event.CreateRoomGroupEvent;
+import com.ershi.chat.event.InviteGroupEvent;
 import com.ershi.chat.mapper.RoomGroupMapper;
-import com.ershi.chat.service.IGroupMemberService;
-import com.ershi.chat.service.IRoomGroupService;
-import com.ershi.chat.service.IRoomService;
+import com.ershi.chat.service.*;
 import com.ershi.chat.service.cache.GroupMemberCacheV2;
 import com.ershi.chat.service.cache.RoomCache;
 import com.ershi.chat.service.cache.RoomGroupCache;
@@ -70,6 +71,12 @@ public class RoomGroupServiceImpl extends ServiceImpl<RoomGroupMapper, RoomGroup
 
     @Resource
     private GroupMemberCacheV2 groupMemberCacheV2;
+
+    @Resource
+    private IUserFriendService userFriendService;
+
+    @Resource
+    private IGroupInviteService groupInviteService;
 
     @Override
     @Transactional
@@ -182,5 +189,76 @@ public class RoomGroupServiceImpl extends ServiceImpl<RoomGroupMapper, RoomGroup
 
         // 清除缓存，保证缓存一致性
         groupMemberCacheV2.delete(roomId, uid);
+    }
+
+    @Override
+    public void inviteFriendToGroup(Long roomId, List<Long> friendUidList) {
+        Long uid = RequestHolder.get().getUid();
+
+        // 校验参数
+        AssertUtil.nonNull(roomId, BusinessErrorEnum.API_PARAM_ERROR);
+        AssertUtil.isNotEmpty(friendUidList, BusinessErrorEnum.API_PARAM_ERROR);
+
+        // 验证群聊是否存在
+        RoomEntity room = roomCache.get(roomId);
+        AssertUtil.nonNull(room, BusinessErrorEnum.ROOM_NOT_EXIST_ERROR);
+        RoomGroupEntity roomGroup = roomGroupCache.get(roomId);
+        AssertUtil.nonNull(roomGroup, BusinessErrorEnum.ROOM_NOT_EXIST_ERROR);
+
+        // 验证群聊类型是否正确
+        AssertUtil.isTrue(RoomTypeEnum.GROUP.getType().equals(room.getType()), BusinessErrorEnum.API_PARAM_ERROR,
+                "目标群组类型错误，请选择群聊类型会话");
+
+        // 验证当前用户是否是群成员
+        GroupMemberEntity inviter = groupMemberCacheV2.getMemberInfo(roomId, uid);
+        AssertUtil.nonNull(inviter, BusinessErrorEnum.MEMBER_NOT_EXIST_ERROR);
+        AssertUtil.isFalse(GroupMemberRoleEnum.REMOVE.getType().equals(inviter.getRole()),
+                BusinessErrorEnum.MEMBER_NOT_EXIST_ERROR);
+
+        // 去重好友uid列表
+        List<Long> distinctFriendUidList = friendUidList.stream().distinct().toList();
+
+        // 批量验证好友关系、群成员状态和邀请记录
+        List<GroupInviteEntity> inviteList = distinctFriendUidList.stream()
+                .filter(friendUid -> {
+                    // 验证是否是好友关系
+                    boolean isFriend = userFriendService.isFriend(uid, friendUid);
+                    if (!isFriend) {
+                        log.warn("用户uid:{}尝试邀请非好友uid:{}加入群聊roomId:{}", uid, friendUid, roomId);
+                        return false;
+                    }
+
+                    // 验证被邀请人是否已经是群成员
+                    GroupMemberEntity friendMember = groupMemberCacheV2.getMemberInfo(roomId, friendUid);
+                    if (friendMember != null && !GroupMemberRoleEnum.REMOVE.getType().equals(friendMember.getRole())) {
+                        log.warn("用户uid:{}已是群聊roomId:{}的成员，无需重复邀请", friendUid, roomId);
+                        return false;
+                    }
+
+                    // 验证是否已存在待确认的邀请记录
+                    boolean hasPendingInvite = groupInviteService.hasPendingInvite(roomId, uid, friendUid);
+                    if (hasPendingInvite) {
+                        log.warn("用户uid:{}已邀请uid:{}加入群聊roomId:{}，邀请待确认中", uid, friendUid, roomId);
+                        return false;
+                    }
+
+                    return true;
+                })
+                .map(friendUid -> {
+                    // 构建群聊邀请记录
+                    GroupInviteEntity invite = new GroupInviteEntity();
+                    invite.setRoomId(roomId);
+                    invite.setInviterId(uid);
+                    invite.setInvitedId(friendUid);
+                    // 默认待确认状态
+                    invite.setStatus(GroupInviteStatusEnum.PENDING.getType());
+                    return invite;
+                })
+                .toList();
+
+        // 发布群聊邀请事件，异步处理持久化和通知消息
+        if (!inviteList.isEmpty()) {
+            applicationEventPublisher.publishEvent(new InviteGroupEvent(this, inviteList));
+        }
     }
 }

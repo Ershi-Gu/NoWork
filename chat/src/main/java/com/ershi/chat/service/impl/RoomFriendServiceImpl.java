@@ -72,6 +72,12 @@ public class RoomFriendServiceImpl extends ServiceImpl<RoomFriendMapper, RoomFri
         this.updateById(roomFriendEntity);
     }
 
+    @Override
+    public RoomFriendEntity getRoomFriend(Long uid1, Long uid2) {
+        String RFKey = generateRFkey(uid1, uid2);
+        return this.getOne(QueryWrapper.create().where(ROOM_FRIEND_ENTITY.ROOM_KEY.eq(RFKey)));
+    }
+
     /**
      * 生成单聊房间唯一key，小的uid在前
      *

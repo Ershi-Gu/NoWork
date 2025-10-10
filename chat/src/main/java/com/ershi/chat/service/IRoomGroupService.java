@@ -46,4 +46,12 @@ public interface IRoomGroupService extends IService<RoomGroupEntity> {
      * @param roomId 房间id
      */
     void exitGroup(Long roomId);
+
+    /**
+     * 批量邀请好友入群
+     *
+     * @param roomId 群聊房间id
+     * @param friendUidList 好友uid列表
+     */
+    void inviteFriendToGroup(Long roomId, List<Long> friendUidList);
 }

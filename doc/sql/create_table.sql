@@ -200,3 +200,19 @@ create table if not exists secure_invoke_record
 ) engine = InnoDB
   character set utf8mb4
   collate utf8mb4_unicode_ci comment '本地消息表';
+
+-- 入群邀请记录表
+create table if not exists group_invite
+(
+    id          bigint(20)                         not null auto_increment primary key comment '邀请ID',
+    room_id     bigint(20)                         not null comment '群聊会话ID',
+    inviter_id  bigint(20)                         not null comment '邀请人ID',
+    invited_id  bigint(20)                         not null comment '被邀请人ID',
+    status      tinyint                            not null default 0 comment '状态：0-待确认，1-已接受，2-已拒绝',
+    create_time datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    is_delete   tinyint  default 0                 not null comment '是否删除：0-否，1-是',
+    index idx_inviter (inviter_id)
+) engine = InnoDB
+  character set utf8mb4
+  collate utf8mb4_unicode_ci comment '群聊邀请表';

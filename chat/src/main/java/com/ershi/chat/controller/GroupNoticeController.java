@@ -21,14 +21,14 @@ import java.util.List;
  */
 @Tag(name = "群通知模块")
 @RestController
-@RequestMapping("/group/invite")
+@RequestMapping("/group/notice")
 public class GroupNoticeController {
 
     @Resource
     private IGroupInviteService groupInviteService;
 
     @Operation(summary = "获取当前用户群聊邀请列表-仅展示10条")
-    @GetMapping("/list")
+    @GetMapping("/invite/list")
     public ApiResult<List<GroupInviteResp>> getGroupInviteList() {
         Long uid = RequestHolder.get().getUid();
         return ApiResult.success(groupInviteService.getGroupInviteList(uid));

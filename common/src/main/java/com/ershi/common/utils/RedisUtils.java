@@ -359,14 +359,7 @@ public class RedisUtils {
      */
     public static Boolean hmset(String key, Map<String, Object> map) {
         try {
-            // 将 map 的 value 转为字符串（通过 objToStr 方法）
-            Map<String, String> stringMap = map.entrySet().stream()
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            entry -> objToStr(entry.getValue())
-                    ));
-
-            stringRedisTemplate.opsForHash().putAll(key, stringMap);
+            stringRedisTemplate.opsForHash().putAll(key, map);
             return true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -384,14 +377,7 @@ public class RedisUtils {
      */
     public static Boolean hmset(String key, Map<String, Object> map, long time) {
         try {
-            // 将 map 的 value 转为字符串（通过 objToStr 方法）
-            Map<String, String> stringMap = map.entrySet().stream()
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            entry -> objToStr(entry.getValue())
-                    ));
-
-            stringRedisTemplate.opsForHash().putAll(key, stringMap);
+            stringRedisTemplate.opsForHash().putAll(key, map);
             if (time > 0) {
                 expire(key, time);
             }

@@ -43,7 +43,7 @@ public class GroupMemberCacheV2 {
         Map<String, Object> cacheData = memberList.stream()
                 .collect(Collectors.toMap(
                         member -> String.valueOf(member.getUid()),
-                        member -> member
+                        JsonUtils::toStr
                 ));
         RedisUtils.hmset(cacheKey, cacheData, GROUP_MEMBER_EXPIRE_SECONDS);
         
@@ -135,8 +135,8 @@ public class GroupMemberCacheV2 {
      *
      * @param roomId 房间id
      */
-    public void delete(Long roomId) {
-        RedisUtils.del(buildRoomKey(roomId));
+    public void delete(Long roomId, Long uid) {
+        RedisUtils.hdel(buildRoomKey(roomId), uid.toString());
     }
 
     /**

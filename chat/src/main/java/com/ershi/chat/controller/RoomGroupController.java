@@ -43,12 +43,14 @@ public class RoomGroupController {
     @GetMapping("/members")
     public ApiResult<List<Long>> getMemberUidList(@RequestParam Long roomId) {
         return ApiResult.success(roomGroupService.getMemberUidList(roomId));
-
     }
 
-    // todo @Operation(summary = "申请入群")
-
-    // todo @Operation(summary = "退出群聊")
+    @Operation(summary = "退出群聊")
+    @DeleteMapping("/exit")
+    public ApiResult<Void> exitGroup(@RequestParam Long roomId) {
+        roomGroupService.exitGroup(roomId);
+        return ApiResult.success();
+    }
 
     // todo @Operation(summary = "邀请好友入群")
 

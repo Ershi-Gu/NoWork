@@ -39,4 +39,11 @@ public interface IRoomGroupService extends IService<RoomGroupEntity> {
      * @return {@link List }<{@link Long }>
      */
     List<Long> getMemberUidList(Long roomId);
+
+    /**
+     * 退出群聊
+     *
+     * @param roomId 房间id
+     */
+    void exitGroup(Long roomId);
 }

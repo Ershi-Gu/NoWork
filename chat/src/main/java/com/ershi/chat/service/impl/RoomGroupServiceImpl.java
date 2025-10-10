@@ -128,11 +128,11 @@ public class RoomGroupServiceImpl extends ServiceImpl<RoomGroupMapper, RoomGroup
         // 从缓存获取群聊信息
         RoomGroupEntity roomGroup = roomGroupCache.get(roomId);
         AssertUtil.nonNull(roomGroup, BusinessErrorEnum.ROOM_NOT_EXIST_ERROR);
-        
+
         // 从缓存获取当前用户在群组中的成员信息
         GroupMemberEntity member = groupMemberCacheV2.getMemberInfo(roomId, uid);
         AssertUtil.nonNull(member, BusinessErrorEnum.MEMBER_NOT_EXIST_ERROR);
-        
+
         // 构建并返回群聊信息
         return GroupInfoResp.builder()
                 .roomId(roomId)
@@ -153,5 +153,34 @@ public class RoomGroupServiceImpl extends ServiceImpl<RoomGroupMapper, RoomGroup
         }
 
         return memberUidList;
+    }
+
+    @Override
+    @Transactional
+    public void exitGroup(Long roomId) {
+        Long uid = RequestHolder.get().getUid();
+
+        // 从缓存获取群聊信息
+        RoomGroupEntity roomGroup = roomGroupCache.get(roomId);
+        AssertUtil.nonNull(roomGroup, BusinessErrorEnum.ROOM_NOT_EXIST_ERROR);
+
+        // 从缓存获取当前用户在群组中的成员信息
+        GroupMemberEntity member = groupMemberCacheV2.getMemberInfo(roomId, uid);
+
+        // 判断用户是否已退出
+        AssertUtil.nonNull(member, BusinessErrorEnum.MEMBER_NOT_EXIST_ERROR);
+        AssertUtil.isFalse(GroupMemberRoleEnum.REMOVE.getType().equals(member.getRole()),
+                BusinessErrorEnum.MEMBER_NOT_EXIST_ERROR);
+
+        // 群主不能退出群聊
+        AssertUtil.isFalse(Objects.equals(member.getRole(), GroupMemberRoleEnum.LEADER.getType()),
+                BusinessErrorEnum.API_PARAM_ERROR, "群主无法退出群聊，请先转让群主");
+
+        // 更新成员角色为已移除
+        member.setRole(GroupMemberRoleEnum.REMOVE.getType());
+        groupMemberService.updateById(member);
+
+        // 清除缓存，保证缓存一致性
+        groupMemberCacheV2.delete(roomId, uid);
     }
 }

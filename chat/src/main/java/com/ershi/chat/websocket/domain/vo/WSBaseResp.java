@@ -16,7 +16,7 @@ public class WSBaseResp<T> {
      *
      * @see com.ershi.chat.websocket.domain.enums.WSRespTypeEnum
      */
-    private Integer type;
+    private String type;
 
     /**
      * 根据不同的消息 type 规定不同的返回对象类型
@@ -30,7 +30,7 @@ public class WSBaseResp<T> {
      * @param data
      * @return {@link WSBaseResp}<{@link T}>
      */
-    public static <T> WSBaseResp<T> build(Integer type, T data) {
+    public static <T> WSBaseResp<T> build(String type, T data) {
         WSBaseResp<T> wsBaseResp = new WSBaseResp<>();
         wsBaseResp.setType(type);
         wsBaseResp.setData(data);

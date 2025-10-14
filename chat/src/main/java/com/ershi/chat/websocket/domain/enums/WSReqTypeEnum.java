@@ -18,16 +18,16 @@ import java.util.stream.Collectors;
 @Getter
 public enum WSReqTypeEnum {
 
-    HEARTBEAT(1, "心跳包"),
-    MESSAGE(2, "接收客户端发送的消息"),
-    MSG_RECEIVE_ACK(3, "客户端接收聊天消息确认"),
-    MSG_READ(4, "消息已读标记"),
+    HEARTBEAT("heartbeat", "心跳包"),
+    MESSAGE("send_message", "客户端发送消息"),
+    MSG_RECEIVE_ACK("client_ack", "客户端接收聊天消息确认"),
+    MSG_READ("mark_read", "标记消息已读"),
     ;
 
     /**
      * 请求类型
      */
-    private final Integer type;
+    private final String type;
     /**
      * 请求描述
      */
@@ -37,7 +37,7 @@ public enum WSReqTypeEnum {
     /**
      * 枚举类型缓存
      */
-    private static final Map<Integer, WSReqTypeEnum> CACHE;
+    private static final Map<String, WSReqTypeEnum> CACHE;
 
     static {
         CACHE = Arrays.stream(WSReqTypeEnum.values()).collect(Collectors.toMap(WSReqTypeEnum::getType, Function.identity()));
@@ -48,7 +48,7 @@ public enum WSReqTypeEnum {
      * @param type
      * @return {@link WSReqTypeEnum}
      */
-    public static WSReqTypeEnum of(Integer type) {
+    public static WSReqTypeEnum of(String type) {
         return CACHE.get(type);
     }
 }

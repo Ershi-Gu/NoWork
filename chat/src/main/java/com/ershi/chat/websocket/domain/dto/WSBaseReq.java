@@ -14,7 +14,7 @@ public class WSBaseReq {
      * 请求类型：
      * @see com.ershi.chat.websocket.domain.enums.WSReqTypeEnum
      */
-    private Integer type;
+    private String type;
 
     /**
      * 请求包数据

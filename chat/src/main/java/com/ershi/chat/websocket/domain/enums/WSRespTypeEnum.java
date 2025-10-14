@@ -17,19 +17,19 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public enum WSRespTypeEnum {
-    ERROR(-1, "错误消息"),
-    AUTHORIZE_SUCCESS(1, "用户身份认证成功"),
-    MSG_RECEIVE_ACK(2, "服务端接收聊天消息确认"),
-    SEND_CHAT_MESSAGE(3, "发送聊天室消息"),
-    APPLY_FRIEND(4, "好友申请"),
-    MSG_ACK(5, "消息ack操作完成"),
-    MSG_READ(6, "消息已读游标更新"),
+    ERROR("error", "错误消息"),
+    AUTHORIZE_SUCCESS("login_success", "用户身份认证成功"),
+    MSG_RECEIVE_ACK("server_ack", "服务端接收聊天消息确认"),
+    SEND_CHAT_MESSAGE("new_message", "推送新消息"),
+    APPLY_FRIEND("friend_apply", "好友申请通知"),
+    MSG_ACK("ack_success", "消息ack操作完成"),
+    MSG_READ("read_success", "消息已读游标更新"),
     ;
 
     /**
      * 推送消息类型
      */
-    private final Integer type;
+    private final String type;
 
     /**
      * 推送消息描述
@@ -39,13 +39,13 @@ public enum WSRespTypeEnum {
     /**
      * 枚举类缓存
      */
-    private static final Map<Integer, WSRespTypeEnum> CACHE;
+    private static final Map<String, WSRespTypeEnum> CACHE;
 
     static {
         CACHE = Arrays.stream(WSRespTypeEnum.values()).collect(Collectors.toMap(WSRespTypeEnum::getType, Function.identity()));
     }
 
-    public static WSRespTypeEnum of(Integer type) {
+    public static WSRespTypeEnum of(String type) {
         return CACHE.get(type);
     }
 }

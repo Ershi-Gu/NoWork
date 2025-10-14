@@ -168,7 +168,7 @@ public class MsgSenderConsumer implements RocketMQListener<MessageEntity> {
     private void pushMessage(RoomTypeEnum allFlag, List<Long> memberUidList, MessageEntity messageEntity) {
         // 转换消息格式
         ChatMessageResp chatMessageResp = MsgAdapter.buildChatMsgResp(messageEntity);
-        WSBaseResp<ChatMessageResp> wsResp = WSBaseResp.build(WSRespTypeEnum.SEND_CHAT_MESSAGE.getType(), chatMessageResp);
+        WSBaseResp<ChatMessageResp> wsResp = WSBaseResp.build(WSRespTypeEnum.NEW_MESSAGE.getType(), chatMessageResp);
 
         if (allFlag.equals(RoomTypeEnum.ALL)) {
             // 发送全体成员

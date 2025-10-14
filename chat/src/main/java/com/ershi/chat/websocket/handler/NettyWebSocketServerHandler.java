@@ -95,15 +95,15 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
             case HEARTBEAT:
                 break;
             // 发送消息
-            case MESSAGE:
+            case SEND_MESSAGE:
                 chatWebSocketService.receiveChatMsg(ctx.channel(), wsBaseReq.getData());
                 break;
             // 接收方回复ack
-            case MSG_RECEIVE_ACK:
+            case CLIENT_ACK:
                 chatWebSocketService.confirmMsgAck(ctx.channel(), wsBaseReq.getData());
                 break;
             // 消息已读标记
-            case MSG_READ:
+            case MARK_READ:
                 chatWebSocketService.msgRead(ctx.channel(), wsBaseReq.getData());
         }
     }

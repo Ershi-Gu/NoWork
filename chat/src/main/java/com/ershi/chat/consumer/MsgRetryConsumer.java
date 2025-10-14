@@ -35,7 +35,7 @@ public class MsgRetryConsumer implements RocketMQListener<RetryMessage> {
 
         // 转换消息格式
         ChatMessageResp chatMessageResp = MsgAdapter.buildChatMsgResp(messageEntity);
-        WSBaseResp<ChatMessageResp> wsResp = WSBaseResp.build(WSRespTypeEnum.SEND_CHAT_MESSAGE.getType(), chatMessageResp);
+        WSBaseResp<ChatMessageResp> wsResp = WSBaseResp.build(WSRespTypeEnum.NEW_MESSAGE.getType(), chatMessageResp);
 
         // 过滤不在线用户
         List<Long> onlineUids = chatWebSocketService.getOnlineUids();

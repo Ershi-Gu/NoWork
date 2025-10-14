@@ -120,7 +120,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         UserLoginVO userLoginVO = online(channel, loginUser);
 
         // 3.2 推送前端授权成功后的用户信息
-        sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.AUTHORIZE_SUCCESS.getType(), userLoginVO));
+        sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.LOGIN_SUCCESS.getType(), userLoginVO));
     }
 
     /**
@@ -224,7 +224,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
             // 调用chat服务持久化数据并发送消息
             Long msgId = messageService.sendMultiTypeMessage(chatMsgReq);
             // 回复客户端ack -> 消息已接收
-            sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.MSG_RECEIVE_ACK.getType(),
+            sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.SERVER_ACK.getType(),
                     CMReceiveAckResp.build(msgId)));
         });
     }
@@ -285,7 +285,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         msgAckCache.removeUnAckMsg(msgAckReq.getUid(), Collections.singletonList(msgAckReq.getMsgId()));
 
         // 回复客户端ack处理完成
-        sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.MSG_ACK.getType(),
+        sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.ACK_SUCCESS.getType(),
                 WSMsgAckResp.build(msgAckReq.getUid(), msgAckReq.getMsgId())));
     }
 
@@ -320,7 +320,7 @@ public class ChatWebSocketServiceImpl implements ChatWebSocketService {
         }
 
         // 回复用户，操作已完成
-        sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.MSG_READ.getType(),
+        sendMsg(channel, WSBaseResp.build(WSRespTypeEnum.READ_SUCCESS.getType(),
                 WSMsgReadResp.build(msgReadReq.getUid(), msgReadReq.getRoomId())));
     }
 

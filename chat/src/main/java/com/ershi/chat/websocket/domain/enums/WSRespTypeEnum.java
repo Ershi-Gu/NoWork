@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 @Getter
 public enum WSRespTypeEnum {
     ERROR("error", "错误消息"),
-    AUTHORIZE_SUCCESS("login_success", "用户身份认证成功"),
-    MSG_RECEIVE_ACK("server_ack", "服务端接收聊天消息确认"),
-    SEND_CHAT_MESSAGE("new_message", "推送新消息"),
-    APPLY_FRIEND("friend_apply", "好友申请通知"),
-    MSG_ACK("ack_success", "消息ack操作完成"),
-    MSG_READ("read_success", "消息已读游标更新"),
+    LOGIN_SUCCESS("login_success", "用户身份认证成功"),
+    SERVER_ACK("server_ack", "服务端接收聊天消息确认"),
+    NEW_MESSAGE("new_message", "推送新消息"),
+    FRIEND_APPLY("friend_apply", "好友申请通知"),
+    ACK_SUCCESS("ack_success", "消息ack操作完成"),
+    READ_SUCCESS("read_success", "消息已读游标更新"),
     ;
 
     /**

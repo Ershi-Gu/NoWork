@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 public enum WSReqTypeEnum {
 
     HEARTBEAT("heartbeat", "心跳包"),
-    MESSAGE("send_message", "客户端发送消息"),
-    MSG_RECEIVE_ACK("client_ack", "客户端接收聊天消息确认"),
-    MSG_READ("mark_read", "标记消息已读"),
+    SEND_MESSAGE("send_message", "客户端发送消息"),
+    CLIENT_ACK("client_ack", "客户端接收聊天消息确认"),
+    MARK_READ("mark_read", "标记消息已读"),
     ;
 
     /**

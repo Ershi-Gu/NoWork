@@ -48,7 +48,7 @@ public class ApplyFriendEventListener {
 
         // 推送通知
         chatWebSocketService.sendMsgToUser(Collections.singletonList(userApplyEntity.getTargetId()),
-                WSBaseResp.build(WSRespTypeEnum.APPLY_FRIEND.getType(),
+                WSBaseResp.build(WSRespTypeEnum.FRIEND_APPLY.getType(),
                         new WSApplyFriendResp(userApplyEntity.getUid(), unReadCount)));
     }
 }
